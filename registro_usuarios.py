@@ -40,7 +40,11 @@ def registrar_usuario(nombre, email, password):
     finally:
         conn.close()
 
-    #Funcion para escribir el nombre, email y password
+#Esto solo se ejecuta si corres este archivo directamente
+if __name__ == "__main__":
+    crear_tabla_usuarios()
+
+    #Prueba rápida de registro
     nombre = input("Nombre: ")
     email = input("Email: ")
     password = input("Password: ")
