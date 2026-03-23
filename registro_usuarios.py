@@ -2,7 +2,7 @@ import sqlite3
 
 #Función para conectarse a la base de datos
 def get_db():
-    return sqlite3.connect("recetas.db")
+    return sqlite3.connect("usuarios.db")
 
 #Función para crear la tabla usuarios si no existe
 def crear_tabla_usuarios():
@@ -40,7 +40,7 @@ def registrar_usuario(nombre, email, password):
     finally:
         conn.close()
 
-#Esto solo se ejecuta si corres este archivo directamente
+#Crea la 
 if __name__ == "__main__":
     crear_tabla_usuarios()
 
