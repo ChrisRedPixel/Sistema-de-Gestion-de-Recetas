@@ -12,7 +12,7 @@ def crear_tabla_usuarios():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS usuarios (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT NOT NULL,
+        nombre_usuario TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL
     )
@@ -23,15 +23,15 @@ def crear_tabla_usuarios():
     print("Tabla usuarios creada!")
 
 #Función para registrar un usuario
-def registrar_usuario(nombre, email, password):
+def registrar_usuario(nombre_usuario, email, password):
     conn = get_db()
     cursor = conn.cursor()
 
     try:
         cursor.execute("""
-        INSERT INTO usuarios (nombre, email, password)
+        INSERT INTO usuarios (nombre_usuario, email, password)
         VALUES (?, ?, ?)
-        """, (nombre, email, password))
+        """, (nombre_usuario, email, password))
 
         conn.commit()
         print("Usuario registrado!")
@@ -40,13 +40,13 @@ def registrar_usuario(nombre, email, password):
     finally:
         conn.close()
 
-#Crea la 
+#Crea la tabla de usuarios
 if __name__ == "__main__":
     crear_tabla_usuarios()
 
-    #Prueba rápida de registro
-    nombre = input("Nombre: ")
+    #Input para el nombre, email y password
+    nombre_usuario = input("Nombre: ")
     email = input("Email: ")
     password = input("Password: ")
 
-    registrar_usuario(nombre, email, password)
+    registrar_usuario(nombre_usuario, email, password) 
