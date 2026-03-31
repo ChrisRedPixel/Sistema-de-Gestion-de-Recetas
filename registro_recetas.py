@@ -1,6 +1,6 @@
 import sqlite3
 
-# CONEXIÓN A LA BASE DE DATOS
+# CONEXIÓN A LA BASE DE DATOS xd
 def get_db():
     return sqlite3.connect("recetas.db")
 
