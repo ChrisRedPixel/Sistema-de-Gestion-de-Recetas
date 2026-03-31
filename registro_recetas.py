@@ -1,10 +1,11 @@
 import sqlite3
 
-# Función para conectarse a la base de datos
+# CONEXIÓN A LA BASE DE DATOS
 def get_db():
     return sqlite3.connect("recetas.db")
 
-# Crear tabla categorías
+
+# CREAR TABLA CATEGORIAS
 def crear_tabla_categorias():
     conn = get_db()
     cursor = conn.cursor()
@@ -18,9 +19,9 @@ def crear_tabla_categorias():
 
     conn.commit()
     conn.close()
-    print("Tabla categorias creada!")
 
-# Crear tabla recetas (SIN usuario)
+
+# CREAR TABLA RECETAS
 def crear_tabla_recetas():
     conn = get_db()
     cursor = conn.cursor()
@@ -41,48 +42,87 @@ def crear_tabla_recetas():
 
     conn.commit()
     conn.close()
-    print("Tabla recetas creada!")
 
-# Función para registrar categoría
+
+# REGISTRAR CATEGORIA
 def registrar_categoria(nombre):
     conn = get_db()
     cursor = conn.cursor()
+
     try:
         cursor.execute("INSERT INTO categorias (nombre) VALUES (?)", (nombre,))
         conn.commit()
         print(f"Categoría '{nombre}' creada!")
     except sqlite3.IntegrityError:
-        print("La categoría ya existe!")
+        print(" Esa categoría ya existe.")
     finally:
         conn.close()
 
-# Función para registrar receta (SIN usuario)
-def registrar_receta(titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria):
+
+# VER CATEGORIAS
+def ver_categorias():
     conn = get_db()
     cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM categorias")
+    categorias = cursor.fetchall()
+
+    print("\n Categorías disponibles:")
+    for c in categorias:
+        print(f"{c[0]} - {c[1]}")
+
+    conn.close()
+
+
+# REGISTRAR RECETA
+def registrar_receta():
+    conn = get_db()
+    cursor = conn.cursor()
+
+    print("\n=== REGISTRAR RECETA ===")
+
+    titulo = input("Título: ")
+    descripcion = input("Descripción: ")
+    ingredientes = input("Ingredientes: ")
+    pasos = input("Pasos: ")
+
+    try:
+        tiempo = int(input("Tiempo (minutos): "))
+        porciones = int(input("Porciones: "))
+    except ValueError:
+        print(" Error: tiempo y porciones deben ser números.")
+        conn.close()
+        return
+
+    # Mostrar categorías antes de elegir
+    ver_categorias()
+    try:
+        id_categoria = int(input("Selecciona el ID de la categoría: "))
+    except ValueError:
+        print(" ID inválido.")
+        conn.close()
+        return
+
     cursor.execute("""
     INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria)
     VALUES (?, ?, ?, ?, ?, ?, ?)
     """, (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria))
+
     conn.commit()
     conn.close()
-    print(f"Receta '{titulo}' registrada!")
 
-# Crear todas las tablas
+    print("Receta registrada correctamente!")
+
+
+# MAIN
 if __name__ == "__main__":
     crear_tabla_categorias()
     crear_tabla_recetas()
 
-    # Ejemplo de uso
+    # Crear categorías base (solo la primera vez)
     registrar_categoria("Vegetariano")
     registrar_categoria("Keto")
+    registrar_categoria("Postres")
 
-    registrar_receta(
-        titulo="Ensalada de Quinoa",
-        descripcion="Ensalada fresca con quinoa y vegetales",
-        ingredientes="Quinoa, tomate, pepino, zanahoria",
-        pasos="1. Cocinar quinoa\n2. Mezclar con vegetales\n3. Aliñar al gusto",
-        tiempo=20,
-        porciones=2,
-        id_categoria=1
-    )
+    # Registrar receta
+    registrar_receta()
