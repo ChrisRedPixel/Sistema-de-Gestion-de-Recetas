@@ -1,29 +1,33 @@
-from db import crear_tablas
-from usuarios import registrar_usuario
-from categorias import registrar_categoria
-from recetas import registrar_receta
-from likes import like, unlike, contar_likes
+# main.py
+from usuarios import crear_tabla_usuarios, registrar_usuario
+from recetas_categorias import crear_tabla_categorias, crear_tabla_recetas, registrar_categoria, registrar_receta
+from likes_sistema import add_user, add_receta, like, unlike, count
 from ver_usuarios import ver_usuarios
 
 if __name__ == "__main__":
-    crear_tablas()
+    # Crear tablas
+    crear_tabla_usuarios()
+    crear_tabla_categorias()
+    crear_tabla_recetas()
 
-    # Categorías base
+    # Crear categorías base
     registrar_categoria("Vegetariano")
     registrar_categoria("Keto")
     registrar_categoria("Postres")
 
-    # Usuario
+    # Registrar usuario de prueba
     registrar_usuario("Alayna", "alayna@email.com", "1234")
 
     # Ver usuarios
     ver_usuarios()
 
-    # Crear receta (usuario ID 1)
-    registrar_receta(1)
+    # Registrar receta de prueba
+    registrar_receta()
 
-    # Likes
-    like(1, 1)
-    contar_likes(1)
-    unlike(1, 1)
-    contar_likes(1)
+    # Prueba de likes
+    add_user("Bernie")
+    add_receta("Arroz")
+    like("Bernie", 1)
+    count(1)
+    unlike("Bernie", 1)
+    count(1)

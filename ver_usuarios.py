@@ -1,13 +1,12 @@
-from db import get_db
+import sqlite3
 
-def ver_usuarios():
-    conn = get_db()
-    cursor = conn.cursor()
+conn = sqlite3.connect("usuarios.db")
+cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM usuarios")
-    usuarios = cursor.fetchall()
+cursor.execute("SELECT * FROM usuarios")
+usuarios = cursor.fetchall()
 
-    for u in usuarios:
-        print(u)
+for u in usuarios:
+    print(u)
 
-    conn.close()
+conn.close()
