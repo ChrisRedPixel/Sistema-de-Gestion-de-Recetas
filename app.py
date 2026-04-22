@@ -1,0 +1,412 @@
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from functools import wraps
+import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
+
+app = Flask(__name__)
+app.secret_key = 'tu-clave-secreta-muy-segura'
+
+# Conexión a la base de datos
+def get_db():
+    conn = sqlite3.connect("database/recetas.db")
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
+
+# Decorador para requerir login
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Debes iniciar sesión para acceder a esta página.', 'warning')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Ruta principal - ver todas las recetas
+@app.route('/')
+def index():
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
+               COUNT(l.usuario_id) as likes_count
+        FROM recetas r
+        LEFT JOIN categorias c ON r.id_categoria = c.id
+        LEFT JOIN usuarios u ON r.id_usuario = u.id
+        LEFT JOIN likes l ON r.id = l.receta_id
+        GROUP BY r.id
+        ORDER BY r.id DESC
+    """)
+    recetas = cursor.fetchall()
+    conn.close()
+    return render_template('index.html', recetas=recetas)
+
+# Registro de usuarios
+@app.route('/registro', methods=['GET', 'POST'])
+def registro():
+    if request.method == 'POST':
+        nombre_usuario = request.form['nombre_usuario']
+        email = request.form['email']
+        password = request.form['password']
+        password_hash = generate_password_hash(password)
+
+        conn = get_db()
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                "INSERT INTO usuarios (nombre_usuario, email, password) VALUES (?, ?, ?)",
+                (nombre_usuario, email, password_hash)
+            )
+            conn.commit()
+            flash('Usuario registrado exitosamente. Ahora puedes iniciar sesión.', 'success')
+            return redirect(url_for('login'))
+        except sqlite3.IntegrityError:
+            flash('El email ya está registrado.', 'error')
+        finally:
+            conn.close()
+
+    return render_template('registro.html')
+
+# Login
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM usuarios WHERE email = ?", (email,))
+        usuario = cursor.fetchone()
+        conn.close()
+
+        if usuario and check_password_hash(usuario['password'], password):
+            session['user_id'] = usuario['id']
+            session['nombre_usuario'] = usuario['nombre_usuario']
+            flash(f'¡Bienvenido, {usuario["nombre_usuario"]}!', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Email o contraseña incorrectos.', 'error')
+
+    return render_template('login.html')
+
+# Logout
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('Has cerrado sesión exitosamente.', 'info')
+    return redirect(url_for('index'))
+
+# Crear nueva receta
+@app.route('/receta/nueva', methods=['GET', 'POST'])
+@login_required
+def nueva_receta():
+    conn = get_db()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        titulo = request.form['titulo']
+        descripcion = request.form['descripcion']
+        ingredientes = request.form['ingredientes']
+        pasos = request.form['pasos']
+        tiempo = request.form['tiempo']
+        porciones = request.form['porciones']
+        id_categoria = request.form['id_categoria']
+        id_usuario = session['user_id']
+
+        cursor.execute("""
+            INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, id_usuario)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, id_usuario))
+        conn.commit()
+        conn.close()
+
+        flash('Receta creada exitosamente.', 'success')
+        return redirect(url_for('mis_recetas'))
+
+    cursor.execute("SELECT * FROM categorias")
+    categorias = cursor.fetchall()
+    conn.close()
+
+    return render_template('receta_form.html', categorias=categorias, receta=None)
+
+# Editar receta
+@app.route('/receta/<int:id>/editar', methods=['GET', 'POST'])
+@login_required
+def editar_receta(id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Verificar que la receta pertenece al usuario
+    cursor.execute("SELECT * FROM recetas WHERE id = ? AND id_usuario = ?", (id, session['user_id']))
+    receta = cursor.fetchone()
+    if not receta:
+        flash('No tienes permiso para editar esta receta.', 'error')
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        titulo = request.form['titulo']
+        descripcion = request.form['descripcion']
+        ingredientes = request.form['ingredientes']
+        pasos = request.form['pasos']
+        tiempo = request.form['tiempo']
+        porciones = request.form['porciones']
+        id_categoria = request.form['id_categoria']
+
+        cursor.execute("""
+            UPDATE recetas SET titulo=?, descripcion=?, ingredientes=?, pasos=?, tiempo=?, porciones=?, id_categoria=?
+            WHERE id=? AND id_usuario=?
+        """, (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, id, session['user_id']))
+        conn.commit()
+        conn.close()
+
+        flash('Receta actualizada exitosamente.', 'success')
+        return redirect(url_for('mis_recetas'))
+
+    cursor.execute("SELECT * FROM categorias")
+    categorias = cursor.fetchall()
+    conn.close()
+
+    return render_template('receta_form.html', categorias=categorias, receta=receta)
+
+# Eliminar receta
+@app.route('/receta/<int:id>/eliminar', methods=['POST'])
+@login_required
+def eliminar_receta(id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Verificar que la receta pertenece al usuario
+    cursor.execute("SELECT * FROM recetas WHERE id = ? AND id_usuario = ?", (id, session['user_id']))
+    if not cursor.fetchone():
+        flash('No tienes permiso para eliminar esta receta.', 'error')
+        return redirect(url_for('index'))
+
+    cursor.execute("DELETE FROM recetas WHERE id = ? AND id_usuario = ?", (id, session['user_id']))
+    conn.commit()
+    conn.close()
+
+    flash('Receta eliminada exitosamente.', 'success')
+    return redirect(url_for('mis_recetas'))
+
+# Ver mis recetas
+@app.route('/mis-recetas')
+@login_required
+def mis_recetas():
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT r.*, c.nombre as categoria,
+               COUNT(l.usuario_id) as likes_count
+        FROM recetas r
+        LEFT JOIN categorias c ON r.id_categoria = c.id
+        LEFT JOIN likes l ON r.id = l.receta_id
+        WHERE r.id_usuario = ?
+        GROUP BY r.id
+        ORDER BY r.id DESC
+    """, (session['user_id'],))
+    recetas = cursor.fetchall()
+    conn.close()
+    return render_template('mis_recetas.html', recetas=recetas)
+
+# Ver detalle de receta
+@app.route('/receta/<int:id>')
+def ver_receta(id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
+               COUNT(l.usuario_id) as likes_count
+        FROM recetas r
+        LEFT JOIN categorias c ON r.id_categoria = c.id
+        LEFT JOIN usuarios u ON r.id_usuario = u.id
+        LEFT JOIN likes l ON r.id = l.receta_id
+        WHERE r.id = ?
+        GROUP BY r.id
+    """, (id,))
+    receta = cursor.fetchone()
+
+    if not receta:
+        flash('Receta no encontrada.', 'error')
+        return redirect(url_for('index'))
+
+    # Verificar si el usuario actual ya dio like y si es favorito
+    tiene_like = False
+    es_favorito = False
+    if 'user_id' in session:
+        cursor.execute("SELECT * FROM likes WHERE usuario_id = ? AND receta_id = ?",
+                      (session['user_id'], id))
+        tiene_like = cursor.fetchone() is not None
+
+        cursor.execute("SELECT * FROM favoritos WHERE usuario_id = ? AND receta_id = ?",
+                      (session['user_id'], id))
+        es_favorito = cursor.fetchone() is not None
+
+    conn.close()
+    return render_template('receta_detalle.html', receta=receta, tiene_like=tiene_like, es_favorito=es_favorito)
+
+# Dar like a una receta
+@app.route('/receta/<int:id>/like', methods=['POST'])
+@login_required
+def dar_like(id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            "INSERT INTO likes (usuario_id, receta_id) VALUES (?, ?)",
+            (session['user_id'], id)
+        )
+        conn.commit()
+        flash('¡Te gusta esta receta!', 'success')
+    except sqlite3.IntegrityError:
+        flash('Ya diste like a esta receta.', 'info')
+    finally:
+        conn.close()
+
+    return redirect(url_for('ver_receta', id=id))
+
+# Quitar like a una receta
+@app.route('/receta/<int:id>/unlike', methods=['POST'])
+@login_required
+def quitar_like(id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        "DELETE FROM likes WHERE usuario_id = ? AND receta_id = ?",
+        (session['user_id'], id)
+    )
+    conn.commit()
+    conn.close()
+
+    flash('Like eliminado.', 'info')
+    return redirect(url_for('ver_receta', id=id))
+
+# Mis favoritos
+@app.route('/mis-favoritos')
+@login_required
+def mis_favoritos():
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
+               COUNT(l.usuario_id) as likes_count
+        FROM recetas r
+        LEFT JOIN categorias c ON r.id_categoria = c.id
+        LEFT JOIN usuarios u ON r.id_usuario = u.id
+        LEFT JOIN likes l ON r.id = l.receta_id
+        WHERE r.id IN (
+            SELECT receta_id FROM favoritos WHERE usuario_id = ?
+        )
+        GROUP BY r.id
+        ORDER BY r.id DESC
+    """, (session['user_id'],))
+    favoritos = cursor.fetchall()
+    conn.close()
+    return render_template('favoritos.html', favoritos=favoritos)
+
+# Agregar a favoritos
+@app.route('/receta/<int:id>/favorito', methods=['POST'])
+@login_required
+def agregar_favorito(id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            "INSERT INTO favoritos (usuario_id, receta_id) VALUES (?, ?)",
+            (session['user_id'], id)
+        )
+        conn.commit()
+        flash('Receta agregada a favoritos.', 'success')
+    except sqlite3.IntegrityError:
+        flash('Esta receta ya está en tus favoritos.', 'info')
+    finally:
+        conn.close()
+
+    return redirect(url_for('ver_receta', id=id))
+
+# Quitar de favoritos
+@app.route('/receta/<int:id>/no-favorito', methods=['POST'])
+@login_required
+def quitar_favorito(id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        "DELETE FROM favoritos WHERE usuario_id = ? AND receta_id = ?",
+        (session['user_id'], id)
+    )
+    conn.commit()
+    conn.close()
+
+    flash('Receta eliminada de favoritos.', 'info')
+    return redirect(url_for('mis_favoritos'))
+
+# Perfil de usuario
+@app.route('/perfil/<int:id>')
+def perfil_usuario(id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, nombre_usuario, email FROM usuarios WHERE id = ?", (id,))
+    usuario = cursor.fetchone()
+
+    if not usuario:
+        flash('Usuario no encontrado.', 'error')
+        return redirect(url_for('index'))
+
+    cursor.execute("""
+        SELECT r.*, c.nombre as categoria,
+               COUNT(l.usuario_id) as likes_count
+        FROM recetas r
+        LEFT JOIN categorias c ON r.id_categoria = c.id
+        LEFT JOIN likes l ON r.id = l.receta_id
+        WHERE r.id_usuario = ?
+        GROUP BY r.id
+        ORDER BY r.id DESC
+    """, (id,))
+    recetas = cursor.fetchall()
+    conn.close()
+
+    return render_template('perfil.html', usuario=usuario, recetas=recetas)
+
+# Buscar recetas
+@app.route('/buscar')
+def buscar_recetas():
+    query = request.args.get('q', '')
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    if query:
+        cursor.execute("""
+            SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
+                   COUNT(l.usuario_id) as likes_count
+            FROM recetas r
+            LEFT JOIN categorias c ON r.id_categoria = c.id
+            LEFT JOIN usuarios u ON r.id_usuario = u.id
+            LEFT JOIN likes l ON r.id = l.receta_id
+            WHERE r.titulo LIKE ? OR r.descripcion LIKE ? OR r.ingredientes LIKE ?
+            GROUP BY r.id
+            ORDER BY r.id DESC
+        """, (f'%{query}%', f'%{query}%', f'%{query}%'))
+    else:
+        cursor.execute("""
+            SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
+                   COUNT(l.usuario_id) as likes_count
+            FROM recetas r
+            LEFT JOIN categorias c ON r.id_categoria = c.id
+            LEFT JOIN usuarios u ON r.id_usuario = u.id
+            LEFT JOIN likes l ON r.id = l.receta_id
+            GROUP BY r.id
+            ORDER BY r.id DESC
+        """)
+
+    recetas = cursor.fetchall()
+    conn.close()
+
+    return render_template('buscar.html', recetas=recetas, query=query)
+
+if __name__ == '__main__':
+    app.run(debug=True)

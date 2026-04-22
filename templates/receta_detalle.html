@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}{{ receta.titulo }} - My Cooking{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Botón volver -->
+    <a href="{{ url_for('index') }}" class="text-gray-600 hover:text-gray-800 mb-4 inline-block">
+        ← Volver al inicio
+    </a>
+
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <!-- Encabezado -->
+        <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6">
+            <div class="flex justify-between items-start">
+                <div>
+                    <span class="bg-white bg-opacity-20 text-white text-xs px-3 py-1 rounded-full">
+                        {{ receta.categoria or 'Sin categoría' }}
+                    </span>
+                    <h1 class="text-3xl font-bold mt-3">{{ receta.titulo }}</h1>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">❤️</span>
+                    <span class="text-2xl font-bold">{{ receta.likes_count }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6">
+            <!-- Información del autor y acciones -->
+            <div class="flex justify-between items-center mb-6 pb-6 border-b">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold">
+                        {{ receta.autor[0].upper() }}
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-800">{{ receta.autor }}</p>
+                        <p class="text-sm text-gray-500">Autor de la receta</p>
+                    </div>
+                </div>
+
+                {% if session.user_id %}
+                    <div class="flex gap-2">
+                        {% if session.user_id != receta.autor_id %}
+                            {% if es_favorito %}
+                                <form action="{{ url_for('quitar_favorito', id=receta.id) }}" method="POST">
+                                    <button type="submit"
+                                            class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 transition-colors">
+                                        ❤️ En favoritos
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form action="{{ url_for('agregar_favorito', id=receta.id) }}" method="POST">
+                                    <button type="submit"
+                                            class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+                                        🤍 Agregar a favoritos
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% else %}
+                            <a href="{{ url_for('editar_receta', id=receta.id) }}"
+                               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                Editar
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Información básica -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-gray-500 text-sm">Tiempo de preparación</p>
+                    <p class="text-xl font-semibold text-gray-800">{{ receta.tiempo }} minutos</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-gray-500 text-sm">Porciones</p>
+                    <p class="text-xl font-semibold text-gray-800">{{ receta.porciones }} personas</p>
+                </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">Descripción</h2>
+                <p class="text-gray-600">{{ receta.descripcion }}</p>
+            </div>
+
+            <!-- Ingredientes -->
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">📋 Ingredientes</h2>
+                <ul class="bg-gray-50 p-4 rounded-lg space-y-1">
+                    {% for ingrediente in receta.ingredientes.split('\n') if ingrediente.strip() %}
+                        <li class="text-gray-700">• {{ ingrediente }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Pasos -->
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">👨‍🍳 Preparación</h2>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-gray-700 whitespace-pre-line">{{ receta.pasos }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

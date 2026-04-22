@@ -1,0 +1,7 @@
+ Utilizando Python, Flask y Tailwind CSS desarrolla todo el codigo necesario y la base de datos para 
+ una aplicacion adaptativa y responsiva  Utilizando como marco de referencia el archivo
+  C:\Users\Josefina\Documents\GitHub\Sistema-de-Gestion-de-Recetas\context\App recetas.pdf desarrolla una aplicacion
+  Web adaptativa que permita registrar a usuarios. Para cada usuario el sistema debe permitir registrar recetas. A la
+  vez, el usuario puede ver todas las recetas registradas por otros usuarios y votar (o hacer like) por una receta.
+  Ademas el usuario debe poder hacer un inventario separado de sus recetas favoritas encontradas en toda la base de
+  datos.

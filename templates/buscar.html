@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Buscar Recetas - My Cooking{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-800">Resultados de Búsqueda</h1>
+    {% if query %}
+        <p class="text-gray-600 mt-2">
+            Mostrando resultados para: <span class="font-semibold text-orange-600">"{{ query }}"</span>
+        </p>
+        <a href="{{ url_for('buscar_recetas') }}" class="text-sm text-gray-500 hover:text-orange-600 mt-1 inline-block">
+            Ver todas las recetas
+        </a>
+    {% else %}
+        <p class="text-gray-600 mt-2">Todas las recetas disponibles</p>
+    {% endif %}
+</div>
+
+{% if recetas %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for receta in recetas %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full">
+                            {{ receta.categoria or 'Sin categoría' }}
+                        </span>
+                        <span class="text-red-500 text-sm">
+                            ❤️ {{ receta.likes_count }}
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                        {{ receta.titulo }}
+                    </h3>
+                    <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                        {{ receta.descripcion }}
+                    </p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-500">
+                            Por: <a href="{{ url_for('perfil_usuario', id=receta.autor_id) }}" class="text-orange-600 hover:underline">
+                                {{ receta.autor }}
+                            </a>
+                        </span>
+                        <a href="{{ url_for('ver_receta', id=receta.id) }}"
+                           class="text-orange-600 hover:text-orange-800 text-sm font-medium">
+                            Ver más →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-12">
+        <p class="text-gray-500 text-lg">
+            {% if query %}
+                No se encontraron recetas que coincidan con tu búsqueda.
+            {% else %}
+                No hay recetas registradas aún.
+            {% endif %}
+        </p>
+        {% if query %}
+            <a href="{{ url_for('index') }}" class="text-orange-600 hover:underline mt-2 inline-block">
+                Volver al inicio
+            </a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

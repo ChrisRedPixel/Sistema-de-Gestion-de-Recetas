@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Registro - My Cooking{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Crear Cuenta</h1>
+
+        <form method="POST" action="{{ url_for('registro') }}">
+            <div class="mb-4">
+                <label for="nombre_usuario" class="block text-gray-700 font-medium mb-2">
+                    Nombre de Usuario
+                </label>
+                <input type="text" id="nombre_usuario" name="nombre_usuario" required
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+            </div>
+
+            <div class="mb-4">
+                <label for="email" class="block text-gray-700 font-medium mb-2">
+                    Correo Electrónico
+                </label>
+                <input type="email" id="email" name="email" required
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+            </div>
+
+            <div class="mb-6">
+                <label for="password" class="block text-gray-700 font-medium mb-2">
+                    Contraseña
+                </label>
+                <input type="password" id="password" name="password" required
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-orange-600 text-white py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors">
+                Registrarse
+            </button>
+        </form>
+
+        <p class="text-center text-gray-600 mt-6">
+            ¿Ya tienes cuenta?
+            <a href="{{ url_for('login') }}" class="text-orange-600 hover:underline">
+                Inicia sesión
+            </a>
+        </p>
+    </div>
+</div>
+{% endblock %}

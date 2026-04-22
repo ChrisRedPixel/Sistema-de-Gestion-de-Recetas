@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar' if receta else 'Nueva' }} Receta - My Cooking{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">
+            {{ 'Editar' if receta else 'Crear Nueva' }} Receta
+        </h1>
+
+        <form method="POST">
+            <div class="mb-4">
+                <label for="titulo" class="block text-gray-700 font-medium mb-2">
+                    Título de la Receta
+                </label>
+                <input type="text" id="titulo" name="titulo" required
+                       value="{{ receta.titulo if receta else '' }}"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+            </div>
+
+            <div class="mb-4">
+                <label for="descripcion" class="block text-gray-700 font-medium mb-2">
+                    Descripción
+                </label>
+                <textarea id="descripcion" name="descripcion" rows="3" required
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">{{ receta.descripcion if receta else '' }}</textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="ingredientes" class="block text-gray-700 font-medium mb-2">
+                    Ingredientes (uno por línea)
+                </label>
+                <textarea id="ingredientes" name="ingredientes" rows="5" required
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">{{ receta.ingredientes if receta else '' }}</textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="pasos" class="block text-gray-700 font-medium mb-2">
+                    Pasos de Preparación
+                </label>
+                <textarea id="pasos" name="pasos" rows="6" required
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">{{ receta.pasos if receta else '' }}</textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="tiempo" class="block text-gray-700 font-medium mb-2">
+                        Tiempo (minutos)
+                    </label>
+                    <input type="number" id="tiempo" name="tiempo" required
+                           value="{{ receta.tiempo if receta else '' }}"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                </div>
+
+                <div>
+                    <label for="porciones" class="block text-gray-700 font-medium mb-2">
+                        Porciones
+                    </label>
+                    <input type="number" id="porciones" name="porciones" required
+                           value="{{ receta.porciones if receta else '' }}"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label for="id_categoria" class="block text-gray-700 font-medium mb-2">
+                    Categoría
+                </label>
+                <select id="id_categoria" name="id_categoria" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                    <option value="">Selecciona una categoría</option>
+                    {% for cat in categorias %}
+                        <option value="{{ cat.id }}" {{ 'selected' if receta and receta.id_categoria == cat.id else '' }}>
+                            {{ cat.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex gap-4">
+                <button type="submit"
+                        class="flex-1 bg-orange-600 text-white py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors">
+                    {{ 'Guardar Cambios' if receta else 'Crear Receta' }}
+                </button>
+                <a href="{{ url_for('mis_recetas') }}"
+                   class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors text-center">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

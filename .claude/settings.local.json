@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python init_db.py)",
+      "Bash(pip install *)",
+      "Bash(python app.py)",
+      "Bash(sqlite3 *)",
+      "Bash(python3 *)"
+    ]
+  }
+}
