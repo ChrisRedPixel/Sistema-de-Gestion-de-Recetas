@@ -1,14 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from functools import wraps
 import sqlite3
+import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates')
 app.secret_key = 'tu-clave-secreta-muy-segura'
 
 # Conexión a la base de datos
 def get_db():
-    conn = sqlite3.connect("database/recetas.db")
+    db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'database', 'recetas.db')
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
@@ -23,24 +25,62 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Ruta principal - ver todas las recetas
+# Ruta principal - ver recetas por categorías
 @app.route('/')
 def index():
     conn = get_db()
     cursor = conn.cursor()
+
+    # Obtener recetas por categoría (excluyendo admin id=1)
+    def get_recetas_por_categoria(categoria_nombre):
+        cursor.execute("""
+            SELECT r.*, c.nombre as categoria,
+                   CASE WHEN u.id = 1 THEN 'My Cooking' ELSE u.nombre_usuario END as autor,
+                   u.id as autor_id,
+                   COUNT(l.usuario_id) as likes_count
+            FROM recetas r
+            LEFT JOIN categorias c ON r.id_categoria = c.id
+            LEFT JOIN usuarios u ON r.id_usuario = u.id
+            LEFT JOIN likes l ON r.id = l.receta_id
+            WHERE c.nombre = ? AND r.id_usuario != 1
+            GROUP BY r.id
+            ORDER BY r.id DESC
+        """, (categoria_nombre,))
+        return cursor.fetchall()
+
+    # Obtener solo recetas de usuarios normales (excluyendo admin id=1)
     cursor.execute("""
-        SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
+        SELECT r.*, c.nombre as categoria,
+                   CASE WHEN u.id = 1 THEN 'My Cooking' ELSE u.nombre_usuario END as autor,
+                   u.id as autor_id,
                COUNT(l.usuario_id) as likes_count
         FROM recetas r
         LEFT JOIN categorias c ON r.id_categoria = c.id
         LEFT JOIN usuarios u ON r.id_usuario = u.id
         LEFT JOIN likes l ON r.id = l.receta_id
+        WHERE r.id_usuario != 1
         GROUP BY r.id
         ORDER BY r.id DESC
     """)
-    recetas = cursor.fetchall()
+    recetas_usuarios = cursor.fetchall()
+
+    recetas_vegetariano = get_recetas_por_categoria('Vegetariano')
+    recetas_keto = get_recetas_por_categoria('Keto')
+    recetas_postre = get_recetas_por_categoria('Postre')
+    recetas_desayuno = get_recetas_por_categoria('Desayuno')
+    recetas_cenas = get_recetas_por_categoria('Cenas')
+    recetas_saludables = get_recetas_por_categoria('Saludable')
+
     conn.close()
-    return render_template('index.html', recetas=recetas)
+
+    return render_template('index.html',
+                         recetas_vegetariano=recetas_vegetariano,
+                         recetas_keto=recetas_keto,
+                         recetas_postre=recetas_postre,
+                         recetas_desayuno=recetas_desayuno,
+                         recetas_cenas=recetas_cenas,
+                         recetas_saludables=recetas_saludables,
+                         recetas_usuarios=recetas_usuarios)
 
 # Registro de usuarios
 @app.route('/registro', methods=['GET', 'POST'])
@@ -216,7 +256,9 @@ def ver_receta(id):
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
+        SELECT r.*, c.nombre as categoria,
+               CASE WHEN u.id = 1 THEN 'My Cooking' ELSE u.nombre_usuario END as autor,
+               u.id as autor_id,
                COUNT(l.usuario_id) as likes_count
         FROM recetas r
         LEFT JOIN categorias c ON r.id_categoria = c.id
@@ -290,7 +332,9 @@ def mis_favoritos():
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
+        SELECT r.*, c.nombre as categoria,
+               CASE WHEN u.id = 1 THEN 'My Cooking' ELSE u.nombre_usuario END as autor,
+               u.id as autor_id,
                COUNT(l.usuario_id) as likes_count
         FROM recetas r
         LEFT JOIN categorias c ON r.id_categoria = c.id
@@ -381,7 +425,9 @@ def buscar_recetas():
 
     if query:
         cursor.execute("""
-            SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
+            SELECT r.*, c.nombre as categoria,
+                   CASE WHEN u.id = 1 THEN 'My Cooking' ELSE u.nombre_usuario END as autor,
+                   u.id as autor_id,
                    COUNT(l.usuario_id) as likes_count
             FROM recetas r
             LEFT JOIN categorias c ON r.id_categoria = c.id
@@ -393,7 +439,9 @@ def buscar_recetas():
         """, (f'%{query}%', f'%{query}%', f'%{query}%'))
     else:
         cursor.execute("""
-            SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
+            SELECT r.*, c.nombre as categoria,
+                   CASE WHEN u.id = 1 THEN 'My Cooking' ELSE u.nombre_usuario END as autor,
+                   u.id as autor_id,
                    COUNT(l.usuario_id) as likes_count
             FROM recetas r
             LEFT JOIN categorias c ON r.id_categoria = c.id
