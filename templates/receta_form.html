@@ -9,7 +9,7 @@
             {{ 'Editar' if receta else 'Crear Nueva' }} Receta
         </h1>
 
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             <div class="mb-4">
                 <label for="titulo" class="block text-gray-700 font-medium mb-2">
                     Título de la Receta
@@ -76,6 +76,20 @@
                         </option>
                     {% endfor %}
                 </select>
+            </div>
+
+            <div class="mb-6">
+                <label for="imagen" class="block text-gray-700 font-medium mb-2">
+                    Imagen de la Receta
+                </label>
+                {% if receta and receta.imagen %}
+                    <div class="mb-3">
+                        <img src="{{ url_for('static', filename='uploads/' + receta.imagen) }}" alt="{{ receta.titulo }}" class="w-full h-48 object-cover rounded-lg">
+                    </div>
+                {% endif %}
+                <input type="file" id="imagen" name="imagen" accept=".png,.jpg,.jpeg" required="{{ 'true' if not receta else 'false' }}"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                <p class="text-sm text-gray-500 mt-1">Formatos permitidos: PNG, JPG. Tamaño máximo: 16MB</p>
             </div>
 
             <div class="flex flex-col sm:flex-row gap-4">

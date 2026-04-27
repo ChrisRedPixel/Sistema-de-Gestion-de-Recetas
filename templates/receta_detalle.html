@@ -10,6 +10,11 @@
     </a>
 
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <!-- Imagen de la receta -->
+        {% if receta.imagen %}
+            <img src="{{ url_for('static', filename='uploads/' + receta.imagen) }}" alt="{{ receta.titulo }}" class="w-full h-64 sm:h-80 object-cover">
+        {% endif %}
+
         <!-- Encabezado -->
         <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 sm:p-6">
             <div class="flex flex-col sm:flex-row justify-between items-start gap-3">

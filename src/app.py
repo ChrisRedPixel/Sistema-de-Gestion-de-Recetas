@@ -3,9 +3,20 @@ from functools import wraps
 import sqlite3
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__, template_folder='../templates')
 app.secret_key = 'tu-clave-secreta-muy-segura'
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'uploads')
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+
+# Asegurar que el directorio de uploads existe
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Conexión a la base de datos
 def get_db():
@@ -155,10 +166,31 @@ def nueva_receta():
         id_categoria = request.form['id_categoria']
         id_usuario = session['user_id']
 
+        # Manejar subida de imagen
+        if 'imagen' not in request.files:
+            flash('Debes subir una imagen para la receta.', 'error')
+            return redirect(request.url)
+
+        file = request.files['imagen']
+        if file.filename == '':
+            flash('Debes seleccionar una imagen.', 'error')
+            return redirect(request.url)
+
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            # Añadir timestamp para evitar nombres duplicados
+            import time
+            unique_filename = f"{int(time.time())}_{filename}"
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
+            imagen_path = unique_filename
+        else:
+            flash('Tipo de archivo no permitido. Solo PNG y JPG.', 'error')
+            return redirect(request.url)
+
         cursor.execute("""
-            INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, id_usuario)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, id_usuario))
+            INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, id_usuario, imagen)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, id_usuario, imagen_path))
         conn.commit()
         conn.close()
 
@@ -194,10 +226,25 @@ def editar_receta(id):
         porciones = request.form['porciones']
         id_categoria = request.form['id_categoria']
 
+        # Manejar subida de nueva imagen o mantener la existente
+        imagen_path = receta['imagen']  # Por defecto mantener la imagen actual
+        if 'imagen' in request.files:
+            file = request.files['imagen']
+            if file and file.filename != '' and allowed_file(file.filename):
+                # Eliminar imagen anterior
+                if receta['imagen'] and os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], receta['imagen'])):
+                    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], receta['imagen']))
+
+                filename = secure_filename(file.filename)
+                import time
+                unique_filename = f"{int(time.time())}_{filename}"
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
+                imagen_path = unique_filename
+
         cursor.execute("""
-            UPDATE recetas SET titulo=?, descripcion=?, ingredientes=?, pasos=?, tiempo=?, porciones=?, id_categoria=?
+            UPDATE recetas SET titulo=?, descripcion=?, ingredientes=?, pasos=?, tiempo=?, porciones=?, id_categoria=?, imagen=?
             WHERE id=? AND id_usuario=?
-        """, (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, id, session['user_id']))
+        """, (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, imagen_path, id, session['user_id']))
         conn.commit()
         conn.close()
 
