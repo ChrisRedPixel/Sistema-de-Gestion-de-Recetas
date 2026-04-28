@@ -6,42 +6,42 @@ def get_db():
 
 
 # CREAR TABLA CATEGORIAS
-def crear_tabla_categorias():
-    conn = get_db()
-    cursor = conn.cursor()
+# def crear_tabla_categorias():
+#     conn = get_db()
+#     cursor = conn.cursor()
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS categorias (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT UNIQUE NOT NULL
-    )
-    """)
+#     cursor.execute("""
+#     CREATE TABLE IF NOT EXISTS categorias (
+#         id INTEGER PRIMARY KEY AUTOINCREMENT,
+#         nombre TEXT UNIQUE NOT NULL
+#     )
+#     """)
 
-    conn.commit()
-    conn.close()
+#     conn.commit()
+#     conn.close()
 
 
 # CREAR TABLA RECETAS
-def crear_tabla_recetas():
-    conn = get_db()
-    cursor = conn.cursor()
+# def crear_tabla_recetas():
+#     conn = get_db()
+#     cursor = conn.cursor()
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS recetas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        titulo TEXT NOT NULL,
-        descripcion TEXT,
-        ingredientes TEXT,
-        pasos TEXT,
-        tiempo INTEGER,
-        porciones INTEGER,
-        id_categoria INTEGER,
-        FOREIGN KEY (id_categoria) REFERENCES categorias(id)
-    )
-    """)
+#     cursor.execute("""
+#     CREATE TABLE IF NOT EXISTS recetas (
+#         id INTEGER PRIMARY KEY AUTOINCREMENT,
+#         titulo TEXT NOT NULL,
+#         descripcion TEXT,
+#         ingredientes TEXT,
+#         pasos TEXT,
+#         tiempo INTEGER,
+#         porciones INTEGER,
+#         id_categoria INTEGER,
+#         FOREIGN KEY (id_categoria) REFERENCES categorias(id)
+#     )
+#     """)
 
-    conn.commit()
-    conn.close()
+#     conn.commit()
+#     conn.close()
 
 
 # REGISTRAR CATEGORIA
@@ -114,13 +114,13 @@ def registrar_receta():
     print("Receta registrada correctamente!")
 
 
-# MAIN
-if __name__ == "__main__":
-    crear_tabla_categorias()
-    crear_tabla_recetas()
+# # MAIN
+# if __name__ == "__main__":
+#     crear_tabla_categorias()
+#     crear_tabla_recetas()
 
-    registrar_categoria("Vegetariano")
-    registrar_categoria("Keto")
-    registrar_categoria("Postres")
+#     registrar_categoria("Vegetariano")
+#     registrar_categoria("Keto")
+#     registrar_categoria("Postres")
 
-    registrar_receta()
+#     registrar_receta()

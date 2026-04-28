@@ -2,25 +2,25 @@ import sqlite3
 
 #Función para conectarse a la base de datos
 def get_db():
-    return sqlite3.connect("usuarios.db")
+    return sqlite3.connect("recetas.db")
 
 #Función para crear la tabla usuarios si no existe
-def crear_tabla_usuarios():
-    conn = get_db()
-    cursor = conn.cursor()
+# def crear_tabla_usuarios():
+#     conn = get_db()
+#     cursor = conn.cursor()
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS usuarios (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre_usuario TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL
-    )
-    """)
+#     cursor.execute("""
+#     CREATE TABLE IF NOT EXISTS usuarios (
+#         id INTEGER PRIMARY KEY AUTOINCREMENT,
+#         nombre_usuario TEXT NOT NULL,
+#         email TEXT UNIQUE NOT NULL,
+#         password TEXT NOT NULL
+#     )
+#     """)
 
-    conn.commit()
-    conn.close()
-    print("Tabla usuarios creada!")
+#     conn.commit()
+#     conn.close()
+#     print("Tabla usuarios creada!")
 
 #Función para registrar un usuario
 def registrar_usuario(nombre_usuario, email, password):
@@ -40,12 +40,12 @@ def registrar_usuario(nombre_usuario, email, password):
     finally:
         conn.close()
 
-#Crea la tabla de usuarios
-if __name__ == "__main__":
-    crear_tabla_usuarios()
+# #Crea la tabla de usuarios
+# if __name__ == "__main__":
+#     crear_tabla_usuarios()
 
-    nombre_usuario = input("Nombre: ")
-    email = input("Email: ")
-    password = input("Password: ")
+#     nombre_usuario = input("Nombre: ")
+#     email = input("Email: ")
+#     password = input("Password: ")
 
-    registrar_usuario(nombre_usuario, email, password)
+#     registrar_usuario(nombre_usuario, email, password)

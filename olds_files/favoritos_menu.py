@@ -1,17 +1,17 @@
 import sqlite3
-
+from db import *
 # Conexión a la base de datos
 conexion = sqlite3.connect("recetas.db")
 cursor = conexion.cursor()
 
-# Crear tabla
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS recetas (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nombre TEXT
-)
-""")
-conexion.commit()
+# # Crear tabla
+# cursor.execute("""
+# CREATE TABLE IF NOT EXISTS recetas (
+#     id INTEGER PRIMARY KEY AUTOINCREMENT,
+#     nombre TEXT
+# )
+# """)
+# conexion.commit()
 
 # Función añadir
 def anadir(nombre):

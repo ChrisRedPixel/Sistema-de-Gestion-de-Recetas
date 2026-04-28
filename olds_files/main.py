@@ -1,14 +1,23 @@
 # main.py
+<<<<<<< Updated upstream:olds_files/main.py
 from olds_files.usuarios import crear_tabla_usuarios, registrar_usuario
 from olds_files.recetas_categorias import crear_tabla_categorias, crear_tabla_recetas, registrar_categoria, registrar_receta
 from olds_files.likes_sistema import add_user, add_receta, like, unlike, count
 from olds_files.ver_usuarios import ver_usuarios
+=======
+from usuarios import crear_tabla_usuarios, registrar_usuario
+from recetas_categorias import crear_tabla_categorias, crear_tabla_recetas, registrar_categoria, registrar_receta
+from likes_sistema import add_user, add_receta, like, unlike, count
+from ver_usuarios import ver_usuarios
+from db import crear_tablas
+>>>>>>> Stashed changes:main.py
 
 if __name__ == "__main__":
-    # Crear tablas
-    crear_tabla_usuarios()
-    crear_tabla_categorias()
-    crear_tabla_recetas()
+    # # Crear tablas
+    # crear_tabla_usuarios()
+    # crear_tabla_categorias()
+    # crear_tabla_recetas()
+    crear_tablas()
 
     # Crear categorías base
     registrar_categoria("Vegetariano")
