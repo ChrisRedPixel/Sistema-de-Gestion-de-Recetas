@@ -47,18 +47,36 @@
                 {% if session.user_id %}
                     <div class="flex flex-wrap gap-2">
                         {% if session.user_id != receta.autor_id %}
+                            <!-- Botón de Like -->
+                            {% if tiene_like %}
+                                <form action="{{ url_for('quitar_like', id=receta.id) }}" method="POST">
+                                    <button type="submit"
+                                            class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 transition-colors text-xs sm:text-sm btn-touch">
+                                        👍 Te gusta
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form action="{{ url_for('dar_like', id=receta.id) }}" method="POST">
+                                    <button type="submit"
+                                            class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm btn-touch">
+                                        🤍 Dar like
+                                    </button>
+                                </form>
+                            {% endif %}
+
+                            <!-- Botón de Favoritos -->
                             {% if es_favorito %}
                                 <form action="{{ url_for('quitar_favorito', id=receta.id) }}" method="POST">
                                     <button type="submit"
-                                            class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 transition-colors text-xs sm:text-sm btn-touch">
+                                            class="bg-pink-100 text-pink-600 px-4 py-2 rounded-lg hover:bg-pink-200 transition-colors text-xs sm:text-sm btn-touch">
                                         ❤️ En favoritos
                                     </button>
                                 </form>
                             {% else %}
                                 <form action="{{ url_for('agregar_favorito', id=receta.id) }}" method="POST">
                                     <button type="submit"
-                                            class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm btn-touch">
-                                        🤍 Guardar
+                                            class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm btn-touch">
+                                        🔖 Guardar
                                     </button>
                                 </form>
                             {% endif %}
