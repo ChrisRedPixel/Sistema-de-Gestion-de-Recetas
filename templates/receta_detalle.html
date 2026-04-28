@@ -12,21 +12,21 @@
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <!-- Imagen de la receta -->
         {% if receta.imagen %}
-            <img src="{{ url_for('static', filename='uploads/' + receta.imagen) }}" alt="{{ receta.titulo }}" class="w-full h-64 sm:h-80 object-cover">
+            <img src="{{ url_for('static', filename='uploads/' + receta.imagen) }}" alt="{{ receta.titulo }}" class="w-full h-48 sm:h-64 lg:h-80 object-cover">
         {% endif %}
 
         <!-- Encabezado -->
         <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 sm:p-6">
             <div class="flex flex-col sm:flex-row justify-between items-start gap-3">
                 <div>
-                    <span class="bg-white bg-opacity-20 text-white text-xs px-3 py-1 rounded-full">
+                    <span class="bg-white bg-opacity-20 text-white text-[10px] sm:text-xs px-2 sm:px-3 py-1 rounded-full">
                         {{ receta.categoria or 'Sin categoría' }}
                     </span>
-                    <h1 class="text-2xl sm:text-3xl font-bold mt-3">{{ receta.titulo }}</h1>
+                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold mt-2">{{ receta.titulo }}</h1>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-2xl">❤️</span>
-                    <span class="text-2xl font-bold">{{ receta.likes_count }}</span>
+                    <span class="text-xl sm:text-2xl">❤️</span>
+                    <span class="text-xl sm:text-2xl font-bold">{{ receta.likes_count }}</span>
                 </div>
             </div>
         </div>
@@ -39,8 +39,8 @@
                         {{ receta.autor[0].upper() }}
                     </div>
                     <div>
-                        <p class="font-medium text-gray-800">{{ receta.autor }}</p>
-                        <p class="text-sm text-gray-500">Autor de la receta</p>
+                        <p class="font-medium text-gray-800 text-sm sm:text-base">{{ receta.autor }}</p>
+                        <p class="text-xs sm:text-sm text-gray-500">Autor de la receta</p>
                     </div>
                 </div>
 
@@ -50,21 +50,21 @@
                             {% if es_favorito %}
                                 <form action="{{ url_for('quitar_favorito', id=receta.id) }}" method="POST">
                                     <button type="submit"
-                                            class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 transition-colors text-sm">
+                                            class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 transition-colors text-xs sm:text-sm btn-touch">
                                         ❤️ En favoritos
                                     </button>
                                 </form>
                             {% else %}
                                 <form action="{{ url_for('agregar_favorito', id=receta.id) }}" method="POST">
                                     <button type="submit"
-                                            class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm">
-                                        🤍 Agregar a favoritos
+                                            class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm btn-touch">
+                                        🤍 Guardar
                                     </button>
                                 </form>
                             {% endif %}
                         {% else %}
                             <a href="{{ url_for('editar_receta', id=receta.id) }}"
-                               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm btn-touch">
                                 Editar
                             </a>
                         {% endif %}
@@ -73,37 +73,37 @@
             </div>
 
             <!-- Información básica -->
-            <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
                 <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                    <p class="text-gray-500 text-xs sm:text-sm">Tiempo de preparación</p>
-                    <p class="text-lg sm:text-xl font-semibold text-gray-800">{{ receta.tiempo }} min</p>
+                    <p class="text-gray-500 text-[10px] sm:text-xs">Tiempo de preparación</p>
+                    <p class="text-base sm:text-lg lg:text-xl font-semibold text-gray-800">{{ receta.tiempo }} min</p>
                 </div>
                 <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                    <p class="text-gray-500 text-xs sm:text-sm">Porciones</p>
-                    <p class="text-lg sm:text-xl font-semibold text-gray-800">{{ receta.porciones }} pers.</p>
+                    <p class="text-gray-500 text-[10px] sm:text-xs">Porciones</p>
+                    <p class="text-base sm:text-lg lg:text-xl font-semibold text-gray-800">{{ receta.porciones }} pers.</p>
                 </div>
             </div>
 
             <!-- Descripción -->
             <div class="mb-6">
-                <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Descripción</h2>
+                <h2 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">Descripción</h2>
                 <p class="text-gray-600 text-sm sm:text-base">{{ receta.descripcion }}</p>
             </div>
 
             <!-- Ingredientes -->
             <div class="mb-6">
-                <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">📋 Ingredientes</h2>
-                <ul class="bg-gray-50 p-4 rounded-lg space-y-1">
+                <h2 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">📋 Ingredientes</h2>
+                <ul class="bg-gray-50 p-3 sm:p-4 rounded-lg space-y-1">
                     {% for ingrediente in receta.ingredientes.split('\n') if ingrediente.strip() %}
-                        <li class="text-gray-700 text-sm">• {{ ingrediente }}</li>
+                        <li class="text-gray-700 text-xs sm:text-sm">• {{ ingrediente }}</li>
                     {% endfor %}
                 </ul>
             </div>
 
             <!-- Pasos -->
             <div>
-                <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">👨‍🍳 Preparación</h2>
-                <div class="bg-gray-50 p-4 rounded-lg">
+                <h2 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">👨‍🍳 Preparación</h2>
+                <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
                     <p class="text-gray-700 whitespace-pre-line text-sm sm:text-base">{{ receta.pasos }}</p>
                 </div>
             </div>
