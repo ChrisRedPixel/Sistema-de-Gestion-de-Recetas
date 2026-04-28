@@ -12,6 +12,9 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {% for receta in favoritos %}
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                {% if receta.imagen %}
+                    <img src="{{ url_for('static', filename='uploads/' + receta.imagen) }}" alt="{{ receta.titulo }}" class="w-full h-48 object-cover">
+                {% endif %}
                 <div class="p-4 sm:p-6">
                     <div class="flex justify-between items-start mb-2">
                         <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full">

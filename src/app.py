@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
 from functools import wraps
 import sqlite3
 import os
@@ -12,6 +12,11 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 # Asegurar que el directorio de uploads existe
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+# Ruta para servir archivos subidos
+@app.route('/static/uploads/<filename>')
+def serve_upload(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
@@ -42,7 +47,7 @@ def index():
     conn = get_db()
     cursor = conn.cursor()
 
-    # Obtener recetas por categoría (excluyendo admin id=1)
+    # Obtener recetas por categoría
     def get_recetas_por_categoria(categoria_nombre):
         cursor.execute("""
             SELECT r.*, c.nombre as categoria,
@@ -53,13 +58,13 @@ def index():
             LEFT JOIN categorias c ON r.id_categoria = c.id
             LEFT JOIN usuarios u ON r.id_usuario = u.id
             LEFT JOIN likes l ON r.id = l.receta_id
-            WHERE c.nombre = ? AND r.id_usuario != 1
+            WHERE c.nombre = ?
             GROUP BY r.id
             ORDER BY r.id DESC
         """, (categoria_nombre,))
         return cursor.fetchall()
 
-    # Obtener solo recetas de usuarios normales (excluyendo admin id=1)
+    # Obtener todas las recetas
     cursor.execute("""
         SELECT r.*, c.nombre as categoria,
                    CASE WHEN u.id = 1 THEN 'My Cooking' ELSE u.nombre_usuario END as autor,
@@ -69,7 +74,6 @@ def index():
         LEFT JOIN categorias c ON r.id_categoria = c.id
         LEFT JOIN usuarios u ON r.id_usuario = u.id
         LEFT JOIN likes l ON r.id = l.receta_id
-        WHERE r.id_usuario != 1
         GROUP BY r.id
         ORDER BY r.id DESC
     """)
@@ -77,8 +81,8 @@ def index():
 
     recetas_vegetariano = get_recetas_por_categoria('Vegetariano')
     recetas_keto = get_recetas_por_categoria('Keto')
-    recetas_postre = get_recetas_por_categoria('Postre')
-    recetas_desayuno = get_recetas_por_categoria('Desayuno')
+    recetas_postre = get_recetas_por_categoria('Postres')
+    recetas_desayuno = get_recetas_por_categoria('Desayunos')
     recetas_cenas = get_recetas_por_categoria('Cenas')
     recetas_saludables = get_recetas_por_categoria('Saludable')
 

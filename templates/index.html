@@ -11,25 +11,25 @@
 <!-- Pestañas de categorías -->
 <div class="mb-6 overflow-x-auto">
     <div class="flex space-x-2 pb-2 min-w-max">
-        <button onclick="showCategory('vegetariano')" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800 hover:bg-green-200 transition-colors" data-category="vegetariano">
+        <button onclick="showCategory('vegetariano', this)" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800 hover:bg-green-200 transition-colors" data-category="vegetariano">
             🥬 Vegetariano
         </button>
-        <button onclick="showCategory('keto')" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors" data-category="keto">
+        <button onclick="showCategory('keto', this)" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors" data-category="keto">
             🥑 Keto
         </button>
-        <button onclick="showCategory('postre')" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-pink-100 text-pink-800 hover:bg-pink-200 transition-colors" data-category="postre">
-            🍰 Postre
+        <button onclick="showCategory('postres', this)" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-pink-100 text-pink-800 hover:bg-pink-200 transition-colors" data-category="postres">
+            🍰 Postres
         </button>
-        <button onclick="showCategory('desayuno')" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors" data-category="desayuno">
-            🍳 Desayuno
+        <button onclick="showCategory('desayunos', this)" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors" data-category="desayunos">
+            🍳 Desayunos
         </button>
-        <button onclick="showCategory('cenas')" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors" data-category="cenas">
+        <button onclick="showCategory('cenas', this)" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors" data-category="cenas">
             🌙 Cenas
         </button>
-        <button onclick="showCategory('saludables')" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-teal-100 text-teal-800 hover:bg-teal-200 transition-colors" data-category="saludables">
-            💪 Saludables
+        <button onclick="showCategory('saludable', this)" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-teal-100 text-teal-800 hover:bg-teal-200 transition-colors" data-category="saludable">
+            💪 Saludable
         </button>
-        <button onclick="showCategory('usuarios')" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors" data-category="usuarios">
+        <button onclick="showCategory('usuarios', this)" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors" data-category="usuarios">
             👥 Recetas de Usuarios
         </button>
     </div>
@@ -38,13 +38,16 @@
 <!-- Contenedor de recetas -->
 <div id="recetas-container">
     <!-- Vegetariano -->
-    <div id="vegetariano" class="category-content">
+    <div id="vegetariano" class="category-content hidden">
         <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
             <span class="mr-2">🥬</span> Recetas Vegetarianas
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {% for receta in recetas_vegetariano %}
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                {% if receta.imagen %}
+                    <img src="{{ url_for('static', filename='uploads/' + receta.imagen) }}" alt="{{ receta.titulo }}" class="w-full h-48 object-cover">
+                {% endif %}
                 <div class="p-4 sm:p-6">
                     <div class="flex justify-between items-start mb-2">
                         <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
@@ -85,6 +88,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {% for receta in recetas_keto %}
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                {% if receta.imagen %}
+                    <img src="{{ url_for('static', filename='uploads/' + receta.imagen) }}" alt="{{ receta.titulo }}" class="w-full h-48 object-cover">
+                {% endif %}
                 <div class="p-4 sm:p-6">
                     <div class="flex justify-between items-start mb-2">
                         <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
@@ -117,14 +123,17 @@
         </div>
     </div>
 
-    <!-- Postre -->
-    <div id="postre" class="category-content hidden">
+    <!-- Postres -->
+    <div id="postres" class="category-content hidden">
         <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
             <span class="mr-2">🍰</span> Postres Deliciosos
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {% for receta in recetas_postre %}
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                {% if receta.imagen %}
+                    <img src="{{ url_for('static', filename='uploads/' + receta.imagen) }}" alt="{{ receta.titulo }}" class="w-full h-48 object-cover">
+                {% endif %}
                 <div class="p-4 sm:p-6">
                     <div class="flex justify-between items-start mb-2">
                         <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded-full">
@@ -157,14 +166,17 @@
         </div>
     </div>
 
-    <!-- Desayuno -->
-    <div id="desayuno" class="category-content hidden">
+    <!-- Desayunos -->
+    <div id="desayunos" class="category-content hidden">
         <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
             <span class="mr-2">🍳</span> Desayunos Energéticos
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {% for receta in recetas_desayuno %}
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                {% if receta.imagen %}
+                    <img src="{{ url_for('static', filename='uploads/' + receta.imagen) }}" alt="{{ receta.titulo }}" class="w-full h-48 object-cover">
+                {% endif %}
                 <div class="p-4 sm:p-6">
                     <div class="flex justify-between items-start mb-2">
                         <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
@@ -205,6 +217,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {% for receta in recetas_cenas %}
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                {% if receta.imagen %}
+                    <img src="{{ url_for('static', filename='uploads/' + receta.imagen) }}" alt="{{ receta.titulo }}" class="w-full h-48 object-cover">
+                {% endif %}
                 <div class="p-4 sm:p-6">
                     <div class="flex justify-between items-start mb-2">
                         <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">
@@ -237,14 +252,17 @@
         </div>
     </div>
 
-    <!-- Saludables -->
-    <div id="saludables" class="category-content hidden">
+    <!-- Saludable -->
+    <div id="saludable" class="category-content hidden">
         <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
             <span class="mr-2">💪</span> Recetas Saludables
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {% for receta in recetas_saludables %}
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                {% if receta.imagen %}
+                    <img src="{{ url_for('static', filename='uploads/' + receta.imagen) }}" alt="{{ receta.titulo }}" class="w-full h-48 object-cover">
+                {% endif %}
                 <div class="p-4 sm:p-6">
                     <div class="flex justify-between items-start mb-2">
                         <span class="bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded-full">
@@ -278,7 +296,7 @@
     </div>
 
     <!-- Recetas de Usuarios -->
-    <div id="usuarios" class="category-content hidden">
+    <div id="usuarios" class="category-content">
         <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
             <span class="mr-2">👥</span> Recetas de la Comunidad
         </h2>
@@ -286,6 +304,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {% for receta in recetas_usuarios %}
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                {% if receta.imagen %}
+                    <img src="{{ url_for('static', filename='uploads/' + receta.imagen) }}" alt="{{ receta.titulo }}" class="w-full h-48 object-cover">
+                {% endif %}
                 <div class="p-4 sm:p-6">
                     <div class="flex justify-between items-start mb-2">
                         <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full">
@@ -320,7 +341,7 @@
 </div>
 
 <script>
-function showCategory(categoryName) {
+function showCategory(categoryName, btnElement) {
     // Ocultar todos los contenidos de categoría
     document.querySelectorAll('.category-content').forEach(el => {
         el.classList.add('hidden');
@@ -334,17 +355,25 @@ function showCategory(categoryName) {
     });
 
     // Mostrar la categoría seleccionada
-    document.getElementById(categoryName).classList.remove('hidden');
+    const selectedCategory = document.getElementById(categoryName);
+    if (selectedCategory) {
+        selectedCategory.classList.remove('hidden');
+    }
 
     // Añadir clase activa al botón seleccionado
-    event.target.classList.remove('hover:bg-green-200', 'hover:bg-blue-200', 'hover:bg-pink-200',
-                                  'hover:bg-yellow-200', 'hover:bg-indigo-200', 'hover:bg-teal-200', 'hover:bg-orange-200');
-    event.target.classList.add('bg-orange-600', 'text-white');
+    if (btnElement) {
+        btnElement.classList.remove('hover:bg-green-200', 'hover:bg-blue-200', 'hover:bg-pink-200',
+                                    'hover:bg-yellow-200', 'hover:bg-indigo-200', 'hover:bg-teal-200', 'hover:bg-orange-200');
+        btnElement.classList.add('bg-orange-600', 'text-white');
+    }
 }
 
-// Mostrar vegetariano por defecto al cargar
+// Mostrar recetas de usuarios por defecto al cargar
 document.addEventListener('DOMContentLoaded', function() {
-    showCategory('vegetariano');
+    const usuariosBtn = document.querySelector('.category-btn[data-category="usuarios"]');
+    if (usuariosBtn) {
+        showCategory('usuarios', usuariosBtn);
+    }
 });
 </script>
 {% endblock %}
