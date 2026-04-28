@@ -5,6 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Recetas{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: {
+                        'xs': '320px',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Mejoras para experiencia móvil */
+        @media (max-width: 640px) {
+            body {
+                -webkit-tap-highlight-color: transparent;
+            }
+            input, textarea, select {
+                font-size: 16px; /* Previene zoom en iOS */
+            }
+            .btn-touch {
+                min-height: 44px;
+                min-width: 44px;
+            }
+        }
+        /* Animación suave para menú móvil */
+        #mobile-menu {
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        #mobile-menu.hidden {
+            max-height: 0;
+            opacity: 0;
+        }
+        #mobile-menu:not(.hidden) {
+            max-height: 500px;
+            opacity: 1;
+        }
+    </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- Navegación -->
@@ -18,7 +56,7 @@
                 </div>
 
                 <!-- Botón hamburguesa para móviles -->
-                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100">
+                <button id="mobile-menu-btn" class="md:hidden p-3 rounded-md text-gray-700 hover:bg-gray-100 btn-touch" aria-label="Menú">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
@@ -64,38 +102,40 @@
         </div>
 
         <!-- Menú móvil -->
-        <div id="mobile-menu" class="hidden md:hidden border-t">
-            <div class="px-4 py-3 space-y-3">
+        <div id="mobile-menu" class="hidden md:hidden border-t bg-white">
+            <div class="px-4 py-3 space-y-2">
                 <!-- Barra de búsqueda móvil - visible para todos -->
-                <form action="{{ url_for('buscar_recetas') }}" method="GET" class="flex">
+                <form action="{{ url_for('buscar_recetas') }}" method="GET" class="flex mb-3">
                     <input type="text" name="q" placeholder="Buscar recetas..." value="{{ request.args.get('q', '') }}"
-                           class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-orange-500 text-sm">
-                    <button type="submit" class="bg-orange-600 text-white px-4 py-2 rounded-r-lg hover:bg-orange-700 text-sm">
+                           class="flex-1 px-3 py-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-orange-500 text-base"
+                           style="min-height: 44px;">
+                    <button type="submit" class="bg-orange-600 text-white px-4 py-2 rounded-r-lg hover:bg-orange-700 btn-touch"
+                            style="min-width: 44px; min-height: 44px;">
                         🔍
                     </button>
                 </form>
                 {% if session.user_id %}
-                    <a href="{{ url_for('nueva_receta') }}" class="block py-2 text-gray-700 hover:text-orange-600">
-                        Nueva Receta
+                    <a href="{{ url_for('nueva_receta') }}" class="block py-3 px-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg btn-touch">
+                        📝 Nueva Receta
                     </a>
-                    <a href="{{ url_for('mis_recetas') }}" class="block py-2 text-gray-700 hover:text-orange-600">
-                        Mis Recetas
+                    <a href="{{ url_for('mis_recetas') }}" class="block py-3 px-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg btn-touch">
+                        📋 Mis Recetas
                     </a>
-                    <a href="{{ url_for('mis_favoritos') }}" class="block py-2 text-gray-700 hover:text-orange-600">
+                    <a href="{{ url_for('mis_favoritos') }}" class="block py-3 px-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg btn-touch">
                         ❤️ Favoritos
                     </a>
-                    <a href="{{ url_for('perfil_usuario', id=session.user_id) }}" class="block py-2 text-gray-700 hover:text-orange-600">
-                        {{ session.nombre_usuario }}
+                    <a href="{{ url_for('perfil_usuario', id=session.user_id) }}" class="block py-3 px-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg btn-touch">
+                        👤 {{ session.nombre_usuario }}
                     </a>
-                    <a href="{{ url_for('logout') }}" class="block py-2 text-red-600 hover:text-red-800">
-                        Salir
+                    <a href="{{ url_for('logout') }}" class="block py-3 px-3 text-red-600 hover:bg-red-50 rounded-lg btn-touch">
+                        🚪 Salir
                     </a>
                 {% else %}
-                    <a href="{{ url_for('login') }}" class="block py-2 text-gray-700 hover:text-orange-600">
-                        Iniciar Sesión
+                    <a href="{{ url_for('login') }}" class="block py-3 px-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg btn-touch">
+                        🔐 Iniciar Sesión
                     </a>
-                    <a href="{{ url_for('registro') }}" class="block bg-orange-600 text-white text-center px-4 py-2 rounded-lg hover:bg-orange-700">
-                        Registrarse
+                    <a href="{{ url_for('registro') }}" class="block bg-orange-600 text-white text-center px-4 py-3 rounded-lg hover:bg-orange-700 btn-touch">
+                        ✨ Registrarse
                     </a>
                 {% endif %}
             </div>
@@ -103,9 +143,10 @@
     </nav>
 
     <script>
-        // Toggle menú móvil
+        // Toggle menú móvil con animación
         document.getElementById('mobile-menu-btn').addEventListener('click', function() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
         });
     </script>
 
