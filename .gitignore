@@ -1,7 +1,8 @@
-# Bases de datos
+# Bases de datos (SQLite local - cada desarrollador tiene la suya)
 *.db
 database/*.db
 !database/.gitkeep
+!database/README.md
 
 # Python
 __pycache__/

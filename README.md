@@ -25,8 +25,9 @@ Una aplicación web adaptativa y responsiva para compartir y gestionar recetas d
 pip install -r requirements.txt
 ```
 
-2. Inicializar la base de datos:
+2. Inicializar la base de datos (desde la raíz del proyecto):
 ```bash
+cd src
 python init_db.py
 ```
 
@@ -36,6 +37,18 @@ python app.py
 ```
 
 4. Abrir el navegador en http://127.0.0.1:5000
+
+### Credenciales por defecto
+```
+Email: admin@recetas.com
+Password: admin123
+```
+
+## Nota para el equipo de desarrollo
+
+La base de datos (`recetas.db`) es un archivo SQLite local que **no se sincroniza con Git**. Cada desarrollador debe inicializar su propia copia ejecutando `init_db.py` después de clonar o hacer pull de cambios en el schema.
+
+Ver `database/README.md` para más detalles sobre migraciones y reset de la base de datos.
 
 ## Estructura del Proyecto
 

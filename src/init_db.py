@@ -1,11 +1,22 @@
 import sqlite3
+import os
 from werkzeug.security import generate_password_hash
 
+DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'database', 'recetas.db')
+
 def get_db():
-    conn = sqlite3.connect("database/recetas.db")
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
+
+def reset_database():
+    """Elimina la base de datos actual para permitir una inicialización limpia."""
+    if os.path.exists(DB_PATH):
+        os.remove(DB_PATH)
+        print(f"Base de datos eliminada: {DB_PATH}")
+    else:
+        print(f"La base de datos no existe: {DB_PATH}")
 
 def crear_tablas():
     conn = get_db()
@@ -358,5 +369,8 @@ def inicializar_datos():
     print("  Password: admin123")
 
 if __name__ == "__main__":
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "--reset":
+        reset_database()
     crear_tablas()
     inicializar_datos()
