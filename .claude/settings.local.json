@@ -8,7 +8,9 @@
       "Bash(python3 *)",
       "Bash(python -c \"import sqlite3; conn = sqlite3.connect\\('database/recetas.db'\\); c = conn.cursor\\(\\); c.execute\\('SELECT * FROM categorias'\\); print\\('Categorías:', [r[1] for r in c.fetchall\\(\\)]\\)\")",
       "Bash(python *)",
-      "Bash(curl -s http://127.0.0.1:5000/)"
+      "Bash(curl -s http://127.0.0.1:5000/)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

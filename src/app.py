@@ -339,7 +339,7 @@ def ver_receta(id):
     conn.close()
     return render_template('receta_detalle.html', receta=receta, tiene_like=tiene_like, es_favorito=es_favorito)
 
-# Dar like a una receta
+# Dar like a una receta y agregar a favoritos
 @app.route('/receta/<int:id>/like', methods=['POST'])
 @login_required
 def dar_like(id):
@@ -355,6 +355,16 @@ def dar_like(id):
         flash('¡Te gusta esta receta!', 'success')
     except sqlite3.IntegrityError:
         flash('Ya diste like a esta receta.', 'info')
+
+    # Agregar a favoritos
+    try:
+        cursor.execute(
+            "INSERT INTO favoritos (usuario_id, receta_id) VALUES (?, ?)",
+            (session['user_id'], id)
+        )
+        conn.commit()
+    except sqlite3.IntegrityError:
+        pass
     finally:
         conn.close()
 
@@ -370,10 +380,14 @@ def quitar_like(id):
         "DELETE FROM likes WHERE usuario_id = ? AND receta_id = ?",
         (session['user_id'], id)
     )
+    cursor.execute(
+        "DELETE FROM favoritos WHERE usuario_id = ? AND receta_id = ?",
+        (session['user_id'], id)
+    )
     conn.commit()
     conn.close()
 
-    flash('Like eliminado.', 'info')
+    flash('Like eliminado y receta quitada de favoritos.', 'info')
     return redirect(url_for('ver_receta', id=id))
 
 # Mis favoritos

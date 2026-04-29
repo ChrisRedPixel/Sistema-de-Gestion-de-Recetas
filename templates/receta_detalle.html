@@ -63,23 +63,6 @@
                                     </button>
                                 </form>
                             {% endif %}
-
-                            <!-- Botón de Favoritos -->
-                            {% if es_favorito %}
-                                <form action="{{ url_for('quitar_favorito', id=receta.id) }}" method="POST">
-                                    <button type="submit"
-                                            class="bg-pink-100 text-pink-600 px-4 py-2 rounded-lg hover:bg-pink-200 transition-colors text-xs sm:text-sm btn-touch">
-                                        ❤️ En favoritos
-                                    </button>
-                                </form>
-                            {% else %}
-                                <form action="{{ url_for('agregar_favorito', id=receta.id) }}" method="POST">
-                                    <button type="submit"
-                                            class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm btn-touch">
-                                        🔖 Guardar
-                                    </button>
-                                </form>
-                            {% endif %}
                         {% else %}
                             <a href="{{ url_for('editar_receta', id=receta.id) }}"
                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm btn-touch">
