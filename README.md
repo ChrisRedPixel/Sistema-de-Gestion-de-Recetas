@@ -52,6 +52,16 @@ La aplicación sigue el patrón de diseño arquitectónico **MVC (Modelo-Vista-C
 * **Vista (Interfaz - HTML/Templates):** Representa el componente visual con el que interactúa el usuario. Está construida utilizando plantillas HTML que renderizan la información de forma dinámica gracias al motor Jinja integrado en Flask.
 * **Controlador (Lógica - Flask):** Actúa como intermediario entre el Modelo y la Vista. Flask se encarga de gestionar las rutas de la aplicación, recibir las peticiones del usuario, procesar la lógica de negocio y coordinar la respuesta adecuada.
 
+##  Módulos o Componentes del Sistema
+
+La aplicación está estructurada en módulos independientes que interactúan entre sí para garantizar el correcto funcionamiento del sistema:
+
+* **Módulo de Gestión de Usuarios:** Controla los procesos locales de autenticación, permitiendo el registro de nuevas cuentas, el inicio de sesión seguro y la administración de los perfiles individuales dentro de la aplicación.
+* **Módulo de Gestión de Recetas:** Administra todo el flujo de contenidos del catálogo culinario (operaciones CRUD). Se encarga de procesar la creación, lectura, actualización y eliminación de las recetas ingresadas.
+* **Módulo de Categorías:** Se ocupa de la clasificación y ordenamiento de las recetas según sus características o tipos de dieta (por ejemplo: *Vegetariano, Keto, Postres*), facilitando la organización de la información.
+* **Componente de Base de Datos:** Construido de forma local mediante SQLite, este componente asegura la persistencia, integridad y correcto almacenamiento de todas las tablas y relaciones del sistema (usuarios, recetas, likes y favoritos).
+* **Componente de Interfaz Web:** Representa la capa visual y de interacción desarrollada con HTML5 y Tailwind CSS. Es el módulo encargado de renderizar de manera dinámica y responsiva las pantallas con las que interactúa el usuario final.
+
 ## Características
 
 - **Registro de usuarios**: Sistema de autenticación con registro y login seguro
