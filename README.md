@@ -28,6 +28,14 @@ La aplicación ofrece un flujo completo de gestión de contenidos (CRUD) diseña
 *  **Mantenimiento de Información:** Automatiza la actualización de recetas existentes para corregir o añadir detalles, así como la eliminación definitiva de aquellos registros que ya no se consideren necesarios.
 *  **Consulta Inteligente y Eficiente:** Facilita la exploración, filtrado y visualización ágil del catálogo de recetas guardadas, reduciendo el tiempo de búsqueda mediante una interfaz organizada.
 
+##  Usuarios Objetivo
+
+El sistema está diseñado para adaptarse a diferentes perfiles de usuario, ofreciendo herramientas específicas para cada una de sus necesidades:
+
+* **Usuarios Domésticos:** Personas que cocinan en el hogar y buscan una alternativa ágil para digitalizar sus recetas favoritas, centralizar su catálogo culinario y mantener un mejor control de sus menús diarios.
+* **Cocineros y Aficionados:** Usuarios con mayor experiencia o entusiastas de la cocina que requieren gestionar volúmenes más amplios de recetas, permitiéndoles modificar parámetros, ajustar ingredientes y estructurar un registro técnico de sus preparaciones.
+* **Estudiantes:** Perfiles en etapa de aprendizaje (tanto en el ámbito culinario como en su vida diaria) o que desarrollan proyectos académicos. El sistema les provee una plataforma práctica para registrar información de forma sencilla y consultarla rápidamente en cualquier momento.
+
 ## Características
 
 - **Registro de usuarios**: Sistema de autenticación con registro y login seguro
