@@ -38,11 +38,11 @@ El sistema está diseñado para adaptarse a diferentes perfiles de usuario, ofre
 
 ##  Tecnologías Utilizadas
 
-El proyecto ha sido construido utilizando el siguiente stack tecnológico para garantizar un desarrollo limpio, ligero y eficiente:
+Este proyecto fue desarrollado utilizando un stack tecnológico ligero y eficiente, ideal para la creación de aplicaciones web dinámicas de ejecución local:
 
-* **Backend:** Python con Flask
-* **Frontend:** HTML5, Tailwind CSS (CDN)
-* **Base de datos:** SQLite
+* **Backend (Python con Flask):** Encargado de gestionar la lógica del sistema, el control de las rutas de la aplicación y el procesamiento seguro de la autenticación de usuarios.
+* **Frontend (HTML5 & Tailwind CSS vía CDN):** Utilizado para estructurar y diseñar una interfaz de usuario moderna, limpia y completamente responsiva que se adapta a cualquier tamaño de pantalla.
+* **Base de datos (Python con SQLite):** Motor de base de datos relacional integrado directamente en el entorno local a través de Python, encargado de la creación, almacenamiento y persistencia de las tablas de usuarios, recetas, favoritos y likes.
 
 ## Características
 
