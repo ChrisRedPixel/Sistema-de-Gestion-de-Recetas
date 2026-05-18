@@ -20,6 +20,14 @@ Para muchos entusiastas de la cocina, mantener un registro ordenado de sus recet
 
 Este proyecto nace con el objetivo de resolver este desorden mediante una **plataforma digital centralizada**. El sistema permite almacenar, modificar y consultar cualquier receta de forma intuitiva, optimizando la gestión culinaria y asegurando que tus preparaciones favoritas estén siempre a un solo clic de distancia.
 
+##  Características Principales
+
+La aplicación ofrece un flujo completo de gestión de contenidos (CRUD) diseñado para optimizar la experiencia del usuario a través de las siguientes funcionalidades:
+
+*  **Gestión y Almacenamiento:** Permite registrar nuevas recetas desde cero, capturando detalladamente los ingredientes necesarios, las porciones y los pasos cronológicos de preparación dentro de una base de datos centralizada.
+*  **Mantenimiento de Información:** Automatiza la actualización de recetas existentes para corregir o añadir detalles, así como la eliminación definitiva de aquellos registros que ya no se consideren necesarios.
+*  **Consulta Inteligente y Eficiente:** Facilita la exploración, filtrado y visualización ágil del catálogo de recetas guardadas, reduciendo el tiempo de búsqueda mediante una interfaz organizada.
+
 ## Características
 
 - **Registro de usuarios**: Sistema de autenticación con registro y login seguro
