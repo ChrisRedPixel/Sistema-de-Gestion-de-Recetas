@@ -36,6 +36,14 @@ El sistema está diseñado para adaptarse a diferentes perfiles de usuario, ofre
 * **Cocineros y Aficionados:** Usuarios con mayor experiencia o entusiastas de la cocina que requieren gestionar volúmenes más amplios de recetas, permitiéndoles modificar parámetros, ajustar ingredientes y estructurar un registro técnico de sus preparaciones.
 * **Estudiantes:** Perfiles en etapa de aprendizaje (tanto en el ámbito culinario como en su vida diaria) o que desarrollan proyectos académicos. El sistema les provee una plataforma práctica para registrar información de forma sencilla y consultarla rápidamente en cualquier momento.
 
+##  Tecnologías Utilizadas
+
+El proyecto ha sido construido utilizando el siguiente stack tecnológico para garantizar un desarrollo limpio, ligero y eficiente:
+
+* **Backend:** Python con Flask
+* **Frontend:** HTML5, Tailwind CSS (CDN)
+* **Base de datos:** SQLite
+
 ## Características
 
 - **Registro de usuarios**: Sistema de autenticación con registro y login seguro
