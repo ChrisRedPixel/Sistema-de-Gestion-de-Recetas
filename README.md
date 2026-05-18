@@ -9,6 +9,17 @@ Una aplicación web adaptativa y responsiva para compartir y gestionar recetas d
 - Christian Aleman González
 - Bernie Muñiz Rios
 
+##  El Problema
+
+Para muchos entusiastas de la cocina, mantener un registro ordenado de sus recetas suele ser un desafío. La dispersión de notas en papel, enlaces guardados y mensajes de texto suele provocar:
+*  **Pérdida de información:** Recetas valiosas que se olvidan o se extravían con el tiempo.
+*  **Búsqueda ineficiente:** Dificultad y pérdida de tiempo al intentar localizar un plato específico.
+*  **Falta de estructura:** Ausencia de un formato unificado para organizar ingredientes, pasos y categorías.
+
+##  La Solución
+
+Este proyecto nace con el objetivo de resolver este desorden mediante una **plataforma digital centralizada**. El sistema permite almacenar, modificar y consultar cualquier receta de forma intuitiva, optimizando la gestión culinaria y asegurando que tus preparaciones favoritas estén siempre a un solo clic de distancia.
+
 ## Características
 
 - **Registro de usuarios**: Sistema de autenticación con registro y login seguro
