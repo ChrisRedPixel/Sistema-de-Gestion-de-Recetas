@@ -4,10 +4,10 @@ Una aplicación web adaptativa y responsiva para compartir y gestionar recetas d
 
 ## Integrantes 
 
-Josean C. Jimenez Pagan
-Alayna Vázquez Hernández
-Christian Aleman González
-Bernie Muñiz Rios
+- Josean C. Jimenez Pagan
+- Alayna Vázquez Hernández
+- Christian Aleman González
+- Bernie Muñiz Rios
 
 ## Características
 
