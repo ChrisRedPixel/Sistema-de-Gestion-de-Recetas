@@ -44,6 +44,14 @@ Este proyecto fue desarrollado utilizando un stack tecnológico ligero y eficien
 * **Frontend (HTML5 & Tailwind CSS vía CDN):** Utilizado para estructurar y diseñar una interfaz de usuario moderna, limpia y completamente responsiva que se adapta a cualquier tamaño de pantalla.
 * **Base de datos (Python con SQLite):** Motor de base de datos relacional integrado directamente en el entorno local a través de Python, encargado de la creación, almacenamiento y persistencia de las tablas de usuarios, recetas, favoritos y likes.
 
+##  Arquitectura General
+
+La aplicación sigue el patrón de diseño arquitectónico **MVC (Modelo-Vista-Controlador)**, el cual permite separar la lógica de negocio, los datos y la interfaz de usuario de manera limpia y organizada en el entorno local:
+
+* **Modelo (Base de Datos - SQLite):** Se encarga de la estructura de los datos, las relaciones y la persistencia de la información de la aplicación (tablas de usuarios, recetas, favoritos y likes).
+* **Vista (Interfaz - HTML/Templates):** Representa el componente visual con el que interactúa el usuario. Está construida utilizando plantillas HTML que renderizan la información de forma dinámica gracias al motor Jinja integrado en Flask.
+* **Controlador (Lógica - Flask):** Actúa como intermediario entre el Modelo y la Vista. Flask se encarga de gestionar las rutas de la aplicación, recibir las peticiones del usuario, procesar la lógica de negocio y coordinar la respuesta adecuada.
+
 ## Características
 
 - **Registro de usuarios**: Sistema de autenticación con registro y login seguro
