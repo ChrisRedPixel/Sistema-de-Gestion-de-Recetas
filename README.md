@@ -2,6 +2,13 @@
 
 Una aplicación web adaptativa y responsiva para compartir y gestionar recetas de cocina.
 
+## Integrantes 
+
+Josean C. Jimenez Pagan
+Alayna Vázquez Hernández
+Christian Aleman González
+Bernie Muñiz Rios
+
 ## Características
 
 - **Registro de usuarios**: Sistema de autenticación con registro y login seguro
