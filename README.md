@@ -2,6 +2,66 @@
 
 Una aplicación web adaptativa y responsiva para compartir y gestionar recetas de cocina.
 
+## Integrantes 
+
+- Josean C. Jimenez Pagan
+- Alayna Vázquez Hernández
+- Christian Aleman González
+- Bernie Muñiz Rios
+
+##  El Problema
+
+Para muchos entusiastas de la cocina, mantener un registro ordenado de sus recetas suele ser un desafío. La dispersión de notas en papel, enlaces guardados y mensajes de texto suele provocar:
+*  **Pérdida de información:** Recetas valiosas que se olvidan o se extravían con el tiempo.
+*  **Búsqueda ineficiente:** Dificultad y pérdida de tiempo al intentar localizar un plato específico.
+*  **Falta de estructura:** Ausencia de un formato unificado para organizar ingredientes, pasos y categorías.
+
+##  La Solución
+
+Este proyecto nace con el objetivo de resolver este desorden mediante una **plataforma digital centralizada**. El sistema permite almacenar, modificar y consultar cualquier receta de forma intuitiva, optimizando la gestión culinaria y asegurando que tus preparaciones favoritas estén siempre a un solo clic de distancia.
+
+##  Objetivo del sistema
+
+La aplicación ofrece un flujo completo de gestión de contenidos (CRUD) diseñado para optimizar la experiencia del usuario a través de las siguientes funcionalidades:
+
+*  **Gestión y Almacenamiento:** Permite registrar nuevas recetas desde cero, capturando detalladamente los ingredientes necesarios, las porciones y los pasos cronológicos de preparación dentro de una base de datos centralizada.
+*  **Mantenimiento de Información:** Automatiza la actualización de recetas existentes para corregir o añadir detalles, así como la eliminación definitiva de aquellos registros que ya no se consideren necesarios.
+*  **Consulta Inteligente y Eficiente:** Facilita la exploración, filtrado y visualización ágil del catálogo de recetas guardadas, reduciendo el tiempo de búsqueda mediante una interfaz organizada.
+
+##  Usuarios Objetivo
+
+El sistema está diseñado para adaptarse a diferentes perfiles de usuario, ofreciendo herramientas específicas para cada una de sus necesidades:
+
+* **Usuarios Domésticos:** Personas que cocinan en el hogar y buscan una alternativa ágil para digitalizar sus recetas favoritas, centralizar su catálogo culinario y mantener un mejor control de sus menús diarios.
+* **Cocineros y Aficionados:** Usuarios con mayor experiencia o entusiastas de la cocina que requieren gestionar volúmenes más amplios de recetas, permitiéndoles modificar parámetros, ajustar ingredientes y estructurar un registro técnico de sus preparaciones.
+* **Estudiantes:** Perfiles en etapa de aprendizaje (tanto en el ámbito culinario como en su vida diaria) o que desarrollan proyectos académicos. El sistema les provee una plataforma práctica para registrar información de forma sencilla y consultarla rápidamente en cualquier momento.
+
+##  Tecnologías Utilizadas
+
+Este proyecto fue desarrollado utilizando un stack tecnológico ligero y eficiente, ideal para la creación de aplicaciones web dinámicas de ejecución local:
+
+* **Backend (Python con Flask):** Encargado de gestionar la lógica del sistema, el control de las rutas de la aplicación y el procesamiento seguro de la autenticación de usuarios.
+* **Frontend (HTML5 & Tailwind CSS vía CDN):** Utilizado para estructurar y diseñar una interfaz de usuario moderna, limpia y completamente responsiva que se adapta a cualquier tamaño de pantalla.
+* **Base de datos (Python con SQLite):** Motor de base de datos relacional integrado directamente en el entorno local a través de Python, encargado de la creación, almacenamiento y persistencia de las tablas de usuarios, recetas, favoritos y likes.
+
+##  Arquitectura General
+
+La aplicación sigue el patrón de diseño arquitectónico **MVC (Modelo-Vista-Controlador)**, el cual permite separar la lógica de negocio, los datos y la interfaz de usuario de manera limpia y organizada en el entorno local:
+
+* **Modelo (Base de Datos - SQLite):** Se encarga de la estructura de los datos, las relaciones y la persistencia de la información de la aplicación (tablas de usuarios, recetas, favoritos y likes).
+* **Vista (Interfaz - HTML/Templates):** Representa el componente visual con el que interactúa el usuario. Está construida utilizando plantillas HTML que renderizan la información de forma dinámica gracias al motor Jinja integrado en Flask.
+* **Controlador (Lógica - Flask):** Actúa como intermediario entre el Modelo y la Vista. Flask se encarga de gestionar las rutas de la aplicación, recibir las peticiones del usuario, procesar la lógica de negocio y coordinar la respuesta adecuada.
+
+##  Módulos o Componentes del Sistema
+
+La aplicación está estructurada en módulos independientes que interactúan entre sí para garantizar el correcto funcionamiento del sistema:
+
+* **Módulo de Gestión de Usuarios:** Controla los procesos locales de autenticación, permitiendo el registro de nuevas cuentas, el inicio de sesión seguro y la administración de los perfiles individuales dentro de la aplicación.
+* **Módulo de Gestión de Recetas:** Administra todo el flujo de contenidos del catálogo culinario (operaciones CRUD). Se encarga de procesar la creación, lectura, actualización y eliminación de las recetas ingresadas.
+* **Módulo de Categorías:** Se ocupa de la clasificación y ordenamiento de las recetas según sus características o tipos de dieta (por ejemplo: *Vegetariano, Keto, Postres*), facilitando la organización de la información.
+* **Componente de Base de Datos:** Construido de forma local mediante SQLite, este componente asegura la persistencia, integridad y correcto almacenamiento de todas las tablas y relaciones del sistema (usuarios, recetas, likes y favoritos).
+* **Componente de Interfaz Web:** Representa la capa visual y de interacción desarrollada con HTML5 y Tailwind CSS. Es el módulo encargado de renderizar de manera dinámica y responsiva las pantallas con las que interactúa el usuario final.
+
 ## Características
 
 - **Registro de usuarios**: Sistema de autenticación con registro y login seguro
