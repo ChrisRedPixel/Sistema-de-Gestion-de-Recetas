@@ -1,31 +1,29 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from functools import wraps
 import sqlite3
 import os
+import time
+import shutil
+import glob
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__, template_folder='../templates')
+app = Flask(__name__, template_folder='../templates', static_folder='../static')
 app.secret_key = 'tu-clave-secreta-muy-segura'
-app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'uploads')
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
-
-# Asegurar que el directorio de uploads existe
+app.config['UPLOAD_FOLDER'] = '../static/uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# Ruta para servir archivos subidos
-@app.route('/static/uploads/<filename>')
-def serve_upload(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+def ensure_placeholder():
+    placeholder_path = os.path.join(app.config['UPLOAD_FOLDER'], 'placeholder_receta.png')
+    if os.path.exists(placeholder_path):
+        os.remove(placeholder_path)
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+# Call the function to ensure no placeholder exists
+ensure_placeholder()
 
 # Conexión a la base de datos
 def get_db():
-    db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'database', 'recetas.db')
+    db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'database', 'recetas.db')
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
@@ -50,9 +48,7 @@ def index():
     # Obtener recetas por categoría
     def get_recetas_por_categoria(categoria_nombre):
         cursor.execute("""
-            SELECT r.*, c.nombre as categoria,
-                   CASE WHEN u.id = 1 THEN 'My Cooking' ELSE u.nombre_usuario END as autor,
-                   u.id as autor_id,
+            SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
                    COUNT(l.usuario_id) as likes_count
             FROM recetas r
             LEFT JOIN categorias c ON r.id_categoria = c.id
@@ -64,11 +60,23 @@ def index():
         """, (categoria_nombre,))
         return cursor.fetchall()
 
-    # Obtener todas las recetas
+    # Obtener todas las recetas de usuarios (excluyendo las del admin)
     cursor.execute("""
-        SELECT r.*, c.nombre as categoria,
-                   CASE WHEN u.id = 1 THEN 'My Cooking' ELSE u.nombre_usuario END as autor,
-                   u.id as autor_id,
+        SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
+               COUNT(l.usuario_id) as likes_count
+        FROM recetas r
+        LEFT JOIN categorias c ON r.id_categoria = c.id
+        LEFT JOIN usuarios u ON r.id_usuario = u.id
+        LEFT JOIN likes l ON r.id = l.receta_id
+        WHERE r.id_usuario != 1
+        GROUP BY r.id
+        ORDER BY r.id DESC
+    """)
+    todas_recetas = cursor.fetchall()
+
+    # Obtener algunas recetas destacadas (últimas 6) para mostrar en la portada
+    cursor.execute("""
+        SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
                COUNT(l.usuario_id) as likes_count
         FROM recetas r
         LEFT JOIN categorias c ON r.id_categoria = c.id
@@ -76,13 +84,14 @@ def index():
         LEFT JOIN likes l ON r.id = l.receta_id
         GROUP BY r.id
         ORDER BY r.id DESC
+        LIMIT 6
     """)
-    recetas_usuarios = cursor.fetchall()
+    recetas_destacadas = cursor.fetchall()
 
     recetas_vegetariano = get_recetas_por_categoria('Vegetariano')
     recetas_keto = get_recetas_por_categoria('Keto')
-    recetas_postre = get_recetas_por_categoria('Postres')
-    recetas_desayuno = get_recetas_por_categoria('Desayunos')
+    recetas_postre = get_recetas_por_categoria('Postre')
+    recetas_desayuno = get_recetas_por_categoria('Desayuno')
     recetas_cenas = get_recetas_por_categoria('Cenas')
     recetas_saludables = get_recetas_por_categoria('Saludable')
 
@@ -95,7 +104,8 @@ def index():
                          recetas_desayuno=recetas_desayuno,
                          recetas_cenas=recetas_cenas,
                          recetas_saludables=recetas_saludables,
-                         recetas_usuarios=recetas_usuarios)
+                         recetas_usuarios=todas_recetas,
+                         recetas_destacadas=recetas_destacadas)
 
 # Registro de usuarios
 @app.route('/registro', methods=['GET', 'POST'])
@@ -170,31 +180,23 @@ def nueva_receta():
         id_categoria = request.form['id_categoria']
         id_usuario = session['user_id']
 
-        # Manejar subida de imagen
-        if 'imagen' not in request.files:
-            flash('Debes subir una imagen para la receta.', 'error')
-            return redirect(request.url)
-
-        file = request.files['imagen']
-        if file.filename == '':
-            flash('Debes seleccionar una imagen.', 'error')
-            return redirect(request.url)
-
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            # Añadir timestamp para evitar nombres duplicados
-            import time
-            unique_filename = f"{int(time.time())}_{filename}"
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
-            imagen_path = unique_filename
-        else:
-            flash('Tipo de archivo no permitido. Solo PNG y JPG.', 'error')
-            return redirect(request.url)
+        # Handle image upload
+        imagen_filename = ''  # default: no image
+        if 'imagen' in request.files:
+            file = request.files['imagen']
+            if file.filename != '':
+                # Secure the filename and save
+                filename = secure_filename(file.filename)
+                # Add timestamp to avoid collisions
+                timestamp = str(int(time.time()))
+                filename = f"{timestamp}_{filename}"
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                imagen_filename = filename
 
         cursor.execute("""
             INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, id_usuario, imagen)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, id_usuario, imagen_path))
+        """, (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, id_usuario, imagen_filename))
         conn.commit()
         conn.close()
 
@@ -230,25 +232,28 @@ def editar_receta(id):
         porciones = request.form['porciones']
         id_categoria = request.form['id_categoria']
 
-        # Manejar subida de nueva imagen o mantener la existente
-        imagen_path = receta['imagen']  # Por defecto mantener la imagen actual
+        # Handle image upload
         if 'imagen' in request.files:
             file = request.files['imagen']
-            if file and file.filename != '' and allowed_file(file.filename):
-                # Eliminar imagen anterior
-                if receta['imagen'] and os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], receta['imagen'])):
-                    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], receta['imagen']))
-
+            if file.filename != '':
+                # Secure the filename and save
                 filename = secure_filename(file.filename)
-                import time
-                unique_filename = f"{int(time.time())}_{filename}"
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
-                imagen_path = unique_filename
+                # Add timestamp to avoid collisions
+                timestamp = str(int(time.time()))
+                filename = f"{timestamp}_{filename}"
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                imagen_filename = filename
+            else:
+                # No file selected, keep existing image
+                imagen_filename = receta['imagen']
+        else:
+            # No file part in request (should not happen), keep existing image
+            imagen_filename = receta['imagen']
 
         cursor.execute("""
             UPDATE recetas SET titulo=?, descripcion=?, ingredientes=?, pasos=?, tiempo=?, porciones=?, id_categoria=?, imagen=?
             WHERE id=? AND id_usuario=?
-        """, (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, imagen_path, id, session['user_id']))
+        """, (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_categoria, imagen_filename, id, session['user_id']))
         conn.commit()
         conn.close()
 
@@ -307,9 +312,7 @@ def ver_receta(id):
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT r.*, c.nombre as categoria,
-               CASE WHEN u.id = 1 THEN 'My Cooking' ELSE u.nombre_usuario END as autor,
-               u.id as autor_id,
+        SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
                COUNT(l.usuario_id) as likes_count
         FROM recetas r
         LEFT JOIN categorias c ON r.id_categoria = c.id
@@ -339,7 +342,7 @@ def ver_receta(id):
     conn.close()
     return render_template('receta_detalle.html', receta=receta, tiene_like=tiene_like, es_favorito=es_favorito)
 
-# Dar like a una receta y agregar a favoritos
+# Dar like a una receta
 @app.route('/receta/<int:id>/like', methods=['POST'])
 @login_required
 def dar_like(id):
@@ -355,16 +358,6 @@ def dar_like(id):
         flash('¡Te gusta esta receta!', 'success')
     except sqlite3.IntegrityError:
         flash('Ya diste like a esta receta.', 'info')
-
-    # Agregar a favoritos
-    try:
-        cursor.execute(
-            "INSERT INTO favoritos (usuario_id, receta_id) VALUES (?, ?)",
-            (session['user_id'], id)
-        )
-        conn.commit()
-    except sqlite3.IntegrityError:
-        pass
     finally:
         conn.close()
 
@@ -380,14 +373,10 @@ def quitar_like(id):
         "DELETE FROM likes WHERE usuario_id = ? AND receta_id = ?",
         (session['user_id'], id)
     )
-    cursor.execute(
-        "DELETE FROM favoritos WHERE usuario_id = ? AND receta_id = ?",
-        (session['user_id'], id)
-    )
     conn.commit()
     conn.close()
 
-    flash('Like eliminado y receta quitada de favoritos.', 'info')
+    flash('Like eliminado.', 'info')
     return redirect(url_for('ver_receta', id=id))
 
 # Mis favoritos
@@ -397,9 +386,7 @@ def mis_favoritos():
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT r.*, c.nombre as categoria,
-               CASE WHEN u.id = 1 THEN 'My Cooking' ELSE u.nombre_usuario END as autor,
-               u.id as autor_id,
+        SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
                COUNT(l.usuario_id) as likes_count
         FROM recetas r
         LEFT JOIN categorias c ON r.id_categoria = c.id
@@ -490,9 +477,7 @@ def buscar_recetas():
 
     if query:
         cursor.execute("""
-            SELECT r.*, c.nombre as categoria,
-                   CASE WHEN u.id = 1 THEN 'My Cooking' ELSE u.nombre_usuario END as autor,
-                   u.id as autor_id,
+            SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
                    COUNT(l.usuario_id) as likes_count
             FROM recetas r
             LEFT JOIN categorias c ON r.id_categoria = c.id
@@ -504,9 +489,7 @@ def buscar_recetas():
         """, (f'%{query}%', f'%{query}%', f'%{query}%'))
     else:
         cursor.execute("""
-            SELECT r.*, c.nombre as categoria,
-                   CASE WHEN u.id = 1 THEN 'My Cooking' ELSE u.nombre_usuario END as autor,
-                   u.id as autor_id,
+            SELECT r.*, c.nombre as categoria, u.nombre_usuario as autor, u.id as autor_id,
                    COUNT(l.usuario_id) as likes_count
             FROM recetas r
             LEFT JOIN categorias c ON r.id_categoria = c.id

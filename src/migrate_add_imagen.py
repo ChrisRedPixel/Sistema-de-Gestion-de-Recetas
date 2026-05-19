@@ -26,16 +26,16 @@ def migrate():
 
     print("Añadiendo columna 'imagen' a la tabla 'recetas'...")
 
-    # Añadir la columna con un valor por defecto
+    # Añadir la columna con un valor por defecto (cadena vacía = sin imagen)
     cursor.execute("""
-        ALTER TABLE recetas ADD COLUMN imagen TEXT NOT NULL DEFAULT 'placeholder_receta.png'
+        ALTER TABLE recetas ADD COLUMN imagen TEXT NOT NULL DEFAULT ''
     """)
 
     conn.commit()
     conn.close()
 
     print("Migración completada exitosamente!")
-    print("Se ha añadido la columna 'imagen' con el valor 'placeholder_receta.png' para las recetas existentes.")
+    print("Se ha añadido la columna 'imagen' con valor por defecto vacío (sin imagen) para las recetas existentes.")
 
 if __name__ == "__main__":
     migrate()

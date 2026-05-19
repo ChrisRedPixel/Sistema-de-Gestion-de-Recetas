@@ -1,22 +1,11 @@
 import sqlite3
-import os
 from werkzeug.security import generate_password_hash
 
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'database', 'recetas.db')
-
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect("database/recetas.db")
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
-
-def reset_database():
-    """Elimina la base de datos actual para permitir una inicialización limpia."""
-    if os.path.exists(DB_PATH):
-        os.remove(DB_PATH)
-        print(f"Base de datos eliminada: {DB_PATH}")
-    else:
-        print(f"La base de datos no existe: {DB_PATH}")
 
 def crear_tablas():
     conn = get_db()
@@ -50,7 +39,6 @@ def crear_tablas():
         pasos TEXT,
         tiempo INTEGER,
         porciones INTEGER,
-        imagen TEXT NOT NULL,
         id_categoria INTEGER,
         id_usuario INTEGER,
         FOREIGN KEY (id_categoria) REFERENCES categorias(id),
@@ -127,7 +115,6 @@ def inicializar_datos():
     cats = {row['nombre']: row['id'] for row in cursor.fetchall()}
 
     # Recetas Vegetarianas
-    placeholder_imagen = "placeholder_receta.png"
     recetas_vegetarianas = [
         {
             "titulo": "Ensalada de Quinoa con Vegetales",
@@ -158,10 +145,10 @@ def inicializar_datos():
     for receta in recetas_vegetarianas:
         try:
             cursor.execute("""
-                INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_usuario, id_categoria, imagen)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_usuario, id_categoria)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (receta["titulo"], receta["descripcion"], receta["ingredientes"], receta["pasos"],
-                  receta["tiempo"], receta["porciones"], admin_id, cats["Vegetariano"], placeholder_imagen))
+                  receta["tiempo"], receta["porciones"], admin_id, cats["Vegetariano"]))
             print(f"Receta vegetariana '{receta['titulo']}' creada!")
         except sqlite3.IntegrityError:
             print(f"Receta '{receta['titulo']}' ya existe!")
@@ -197,10 +184,10 @@ def inicializar_datos():
     for receta in recetas_keto:
         try:
             cursor.execute("""
-                INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_usuario, id_categoria, imagen)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_usuario, id_categoria)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (receta["titulo"], receta["descripcion"], receta["ingredientes"], receta["pasos"],
-                  receta["tiempo"], receta["porciones"], admin_id, cats["Keto"], placeholder_imagen))
+                  receta["tiempo"], receta["porciones"], admin_id, cats["Keto"]))
             print(f"Receta keto '{receta['titulo']}' creada!")
         except sqlite3.IntegrityError:
             print(f"Receta '{receta['titulo']}' ya existe!")
@@ -236,10 +223,10 @@ def inicializar_datos():
     for receta in recetas_postre:
         try:
             cursor.execute("""
-                INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_usuario, id_categoria, imagen)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_usuario, id_categoria)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (receta["titulo"], receta["descripcion"], receta["ingredientes"], receta["pasos"],
-                  receta["tiempo"], receta["porciones"], admin_id, cats["Postre"], placeholder_imagen))
+                  receta["tiempo"], receta["porciones"], admin_id, cats["Postre"]))
             print(f"Receta de postre '{receta['titulo']}' creada!")
         except sqlite3.IntegrityError:
             print(f"Receta '{receta['titulo']}' ya existe!")
@@ -275,10 +262,10 @@ def inicializar_datos():
     for receta in recetas_desayuno:
         try:
             cursor.execute("""
-                INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_usuario, id_categoria, imagen)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_usuario, id_categoria)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (receta["titulo"], receta["descripcion"], receta["ingredientes"], receta["pasos"],
-                  receta["tiempo"], receta["porciones"], admin_id, cats["Desayuno"], placeholder_imagen))
+                  receta["tiempo"], receta["porciones"], admin_id, cats["Desayuno"]))
             print(f"Receta de desayuno '{receta['titulo']}' creada!")
         except sqlite3.IntegrityError:
             print(f"Receta '{receta['titulo']}' ya existe!")
@@ -314,10 +301,10 @@ def inicializar_datos():
     for receta in recetas_cenas:
         try:
             cursor.execute("""
-                INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_usuario, id_categoria, imagen)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_usuario, id_categoria)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (receta["titulo"], receta["descripcion"], receta["ingredientes"], receta["pasos"],
-                  receta["tiempo"], receta["porciones"], admin_id, cats["Cenas"], placeholder_imagen))
+                  receta["tiempo"], receta["porciones"], admin_id, cats["Cenas"]))
             print(f"Receta de cena '{receta['titulo']}' creada!")
         except sqlite3.IntegrityError:
             print(f"Receta '{receta['titulo']}' ya existe!")
@@ -353,10 +340,10 @@ def inicializar_datos():
     for receta in recetas_saludables:
         try:
             cursor.execute("""
-                INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_usuario, id_categoria, imagen)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO recetas (titulo, descripcion, ingredientes, pasos, tiempo, porciones, id_usuario, id_categoria)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (receta["titulo"], receta["descripcion"], receta["ingredientes"], receta["pasos"],
-                  receta["tiempo"], receta["porciones"], admin_id, cats["Saludable"], placeholder_imagen))
+                  receta["tiempo"], receta["porciones"], admin_id, cats["Saludable"]))
             print(f"Receta saludable '{receta['titulo']}' creada!")
         except sqlite3.IntegrityError:
             print(f"Receta '{receta['titulo']}' ya existe!")
@@ -369,8 +356,5 @@ def inicializar_datos():
     print("  Password: admin123")
 
 if __name__ == "__main__":
-    import sys
-    if len(sys.argv) > 1 and sys.argv[1] == "--reset":
-        reset_database()
     crear_tablas()
     inicializar_datos()
