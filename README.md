@@ -72,12 +72,6 @@ La aplicación está estructurada en módulos independientes que interactúan en
 - **Perfiles de usuario**: Ver las recetas publicadas por cada usuario
 - **Diseño responsivo**: Interfaz adaptativa con Tailwind CSS
 
-## Tecnologías
-
-- **Backend**: Python con Flask
-- **Frontend**: HTML5, Tailwind CSS (CDN)
-- **Base de datos**: SQLite
-
 ## Instalación
 
 1. Instalar dependencias:
